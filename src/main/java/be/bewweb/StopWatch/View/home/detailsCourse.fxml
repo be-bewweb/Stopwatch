@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="153.0" prefWidth="454.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox alignment="CENTER" prefHeight="226.0" prefWidth="454.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="TOP_CENTER" prefHeight="82.0" prefWidth="454.0">
+               <children>
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Label fx:id="lblNumberTeam" text="000" textAlignment="JUSTIFY">
+                           <font>
+                              <Font size="36.0" />
+                           </font>
+                        </Label>
+                        <Label text="ÉQUIPES" />
+                     </children>
+                  </VBox>
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Label fx:id="lblNumberTeamArrived" alignment="CENTER" text="000" textAlignment="JUSTIFY" textFill="#00c300">
+                           <font>
+                              <Font size="36.0" />
+                           </font>
+                        </Label>
+                        <Label text="ARRIVÉS" />
+                     </children>
+                  </VBox>
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Label fx:id="lblNumberTeamNotArrived" text="000" textAlignment="JUSTIFY" textFill="#c20000">
+                           <font>
+                              <Font size="36.0" />
+                           </font>
+                        </Label>
+                        <Label text="EN COURSE" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <HBox alignment="TOP_CENTER">
+               <children>
+                  <TextField fx:id="txtTime" prefHeight="25.0" prefWidth="398.0" promptText="dd/mm/yyyy hh:mm:ss" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="35.0" prefWidth="454.0">
+               <children>
+                  <Button fx:id="btnStartCourse" mnemonicParsing="false" text="Demarrer la course" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

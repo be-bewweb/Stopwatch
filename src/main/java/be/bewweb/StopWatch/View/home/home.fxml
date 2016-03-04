@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<GridPane gridLinesVisible="true" hgap="10" nodeOrientation="LEFT_TO_RIGHT" vgap="10" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.bewweb.StopWatch.Controler.homeController">
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <Pane prefHeight="491.0" prefWidth="866.0" style="-: #ff0000;">
+         <children>
+            <TabPane fx:id="tpCourse" layoutX="399.0" layoutY="129.0" prefHeight="227.0" prefWidth="468.0" rotateGraphic="true" tabClosingPolicy="UNAVAILABLE" />
+            <MenuBar fx:id="topMenu" prefHeight="27.0" prefWidth="866.0" style="-fx-border-color: transparent;">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                        <MenuItem fx:id="menuItemModifyRace" mnemonicParsing="false" text="Modifier cette course" />
+                        <MenuItem fx:id="menuItemGenerateAllRanking" mnemonicParsing="false" text="Générer tous les classements" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="A propos" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <ButtonBar buttonOrder="" layoutX="17.0" layoutY="439.0" prefHeight="38.0" prefWidth="366.0">
+               <buttons>
+                  <Button fx:id="btnAdd" mnemonicParsing="false" text="Ajouter" />
+                  <Button fx:id="btnRemove" mnemonicParsing="false" text="Supprimer" />
+                  <Button fx:id="btnShow" mnemonicParsing="false" text="Voir" />
+               </buttons>
+            </ButtonBar>
+            <Label layoutX="17.0" layoutY="144.0" text="Liste des equipes" />
+            <Separator layoutX="396.0" layoutY="131.0" orientation="VERTICAL" prefHeight="361.0" prefWidth="8.0" />
+            <Separator layoutY="129.0" prefHeight="3.0" prefWidth="866.0" />
+            <Separator layoutX="399.0" layoutY="371.0" prefHeight="3.0" prefWidth="468.0" />
+            <Label fx:id="lblNameRace" layoutX="14.0" layoutY="45.0" textFill="#868686">
+               <font>
+                  <Font size="48.0" />
+               </font>
+            </Label>
+            <TableView fx:id="tbListTeam" layoutX="17.0" layoutY="168.0" prefHeight="271.0" prefWidth="366.0" />
+            <ButtonBar layoutX="404.0" layoutY="446.0" prefHeight="25.0" prefWidth="449.0">
+               <buttons>
+                  <Button fx:id="btnShowRanking" mnemonicParsing="false" text="Afficher classement générale" />
+                  <Button fx:id="btnEncode" layoutX="384.0" layoutY="10.0" mnemonicParsing="false" text="ENCODER" textFill="#00c300">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
+               </buttons>
+            </ButtonBar>
+         </children>
+      </Pane>
+   </children>
+</GridPane>
