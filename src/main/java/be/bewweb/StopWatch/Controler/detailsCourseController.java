@@ -11,24 +11,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
-import javafx.util.StringConverter;
-import javafx.util.converter.DefaultStringConverter;
-import javafx.util.converter.DoubleStringConverter;
-import javafx.util.converter.FormatStringConverter;
 
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 import static be.bewweb.StopWatch.Utils.Time.convertLocalTimeToUTC;
 import static be.bewweb.StopWatch.Utils.Time.getTimestamp;
@@ -37,7 +22,7 @@ import static be.bewweb.StopWatch.Utils.Time.getTimestamp;
  * Created by Quentin on 08-02-16.
  */
 
-public class detailsCourseController{
+public class detailsCourseController {
 
     @FXML
     private Label lblNumberTeam;
@@ -53,6 +38,7 @@ public class detailsCourseController{
     private Course course;
     private Integer numberTeamArrived;
     private Integer numberTeamValidated;
+
     public detailsCourseController(Course course) {
         this.course = course;
     }
@@ -61,7 +47,7 @@ public class detailsCourseController{
     public void initialize() {
         btnStartCourse.setOnAction(event -> onClickBtnStartCourse(event));
 
-        if(course.isStarted()){
+        if (course.isStarted()) {
             disableTxtTime();
         }
 
@@ -78,7 +64,7 @@ public class detailsCourseController{
 
             @Override
             public void teamAdded(Team team) {
-                if(team.isRegistrationValidated()){
+                if (team.isRegistrationValidated()) {
                     numberTeamValidated += 1;
                     setLabelValue();
                 }
@@ -96,22 +82,22 @@ public class detailsCourseController{
         initAllTeamListener();
     }
 
-    private void disableTxtTime(){
+    private void disableTxtTime() {
         txtTime.setVisible(false);
         btnStartCourse.setVisible(false);
     }
 
-    private void onClickBtnStartCourse(Event event){
-        if(!txtTime.getText().matches("[0-3]?[0-9]\\/[0-1]?[0-9]\\/[0-9]{4} [0-9]{0,2}:[0-9]{0,2}:[0-9]{0,2}")){
+    private void onClickBtnStartCourse(Event event) {
+        if (!txtTime.getText().matches("[0-3]?[0-9]\\/[0-1]?[0-9]\\/[0-9]{4} [0-9]{0,2}:[0-9]{0,2}:[0-9]{0,2}")) {
             txtTime.setStyle("-fx-border-color: red");
             return;
         }
 
-        try{
-            long timestampUTC = getTimestamp(convertLocalTimeToUTC(txtTime.getText(),"dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss.SSS"), "dd/MM/yyyy HH:mm:ss.SSS");
+        try {
+            long timestampUTC = getTimestamp(convertLocalTimeToUTC(txtTime.getText(), "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss.SSS"), "dd/MM/yyyy HH:mm:ss.SSS");
 
-            for (Team team: course.getTeams()) {
-                if(team.getStartTime() == 0){
+            for (Team team : course.getTeams()) {
+                if (team.getStartTime() == 0) {
                     team.setStartTime(timestampUTC);
                 }
             }
@@ -120,25 +106,26 @@ public class detailsCourseController{
             disableTxtTime();
             Race.getInstance().save();
 
-        }catch (ParseException e){
+        } catch (ParseException e) {
             e.printStackTrace();
         }
     }
 
-    private String formatInteger(int i){
-        if(Math.abs(i) < 10){
+    private String formatInteger(int i) {
+        if (Math.abs(i) < 10) {
             return "00" + i;
         }
-        if(Math.abs(i) < 100){
+        if (Math.abs(i) < 100) {
             return "0" + i;
         }
-        return i+"";
+        return i + "";
     }
-    private void initNumberTeam(){
+
+    private void initNumberTeam() {
         numberTeamArrived = 0;
         numberTeamValidated = 0;
-        for(Team team: course.getTeams()){
-            if(team.isRegistrationValidated()) {
+        for (Team team : course.getTeams()) {
+            if (team.isRegistrationValidated()) {
                 numberTeamValidated += 1;
                 if (team.getEndTime().size() == course.getNumberOfTurns()) {
                     numberTeamArrived += 1;
@@ -147,13 +134,13 @@ public class detailsCourseController{
         }
     }
 
-    private void setLabelValue(){
+    private void setLabelValue() {
         lblNumberTeam.setText(formatInteger(numberTeamValidated));
         lblNumberTeamNotArrived.setText(formatInteger(numberTeamValidated - numberTeamArrived));
         lblNumberTeamArrived.setText(formatInteger(numberTeamArrived));
     }
 
-    private void addTeamListener(Team team){
+    private void addTeamListener(Team team) {
         team.addListener(new TeamListener() {
             @Override
             public void dossardChanged(int dossard) {
@@ -189,8 +176,9 @@ public class detailsCourseController{
             }
         });
     }
-    private void initAllTeamListener(){
-        for(Team team: course.getTeams()){
+
+    private void initAllTeamListener() {
+        for (Team team : course.getTeams()) {
             addTeamListener(team);
         }
     }

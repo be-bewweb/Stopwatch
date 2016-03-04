@@ -1,6 +1,5 @@
 package be.bewweb.StopWatch.Utils;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -11,7 +10,7 @@ import java.util.TimeZone;
  * Created by Quentin on 15-02-16.
  */
 public class Time {
-    public static String convertLocalTimeToUTC(String localTime, String timeFormat, String resultTimeFormat) throws ParseException{
+    public static String convertLocalTimeToUTC(String localTime, String timeFormat, String resultTimeFormat) throws ParseException {
         SimpleDateFormat localParser = new SimpleDateFormat(timeFormat);
         localParser.setTimeZone(Calendar.getInstance().getTimeZone());
         Date localDate = localParser.parse(localTime);
@@ -23,6 +22,7 @@ public class Time {
 
     /**
      * this function provide the timestamp of a utc time
+     *
      * @param utcTime UTC time dd/MM/yyyy HH:mm:ss
      * @return timestamp in milisecond
      */
@@ -31,8 +31,10 @@ public class Time {
         utcParser.setTimeZone(TimeZone.getTimeZone("UTC"));
         return utcParser.parse(utcTime).getTime();
     }
+
     /**
      * this function provide the utc time of a timestamp (utc)
+     *
      * @param utcTime UTC time dd/MM/yyyy HH:mm:ss
      * @return timestamp in milisecond
      */
@@ -42,7 +44,7 @@ public class Time {
         return utcParser.format(utcTime);
     }
 
-    public static String convertUTCToLocalTime(String utcTime, String timeFormat, String resultTimeFormat) throws ParseException{
+    public static String convertUTCToLocalTime(String utcTime, String timeFormat, String resultTimeFormat) throws ParseException {
         SimpleDateFormat localParser = new SimpleDateFormat(timeFormat);
         localParser.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date utcDate = localParser.parse(utcTime);

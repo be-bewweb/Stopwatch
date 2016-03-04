@@ -20,12 +20,12 @@ public class mainController extends baseController {
 
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         btnImgCreateRace.setOnMouseClicked(event -> onClickBtnImgCreateRace(event));
         btnImgLoadRace.setOnMouseClicked(event -> onClickBtnImgLoadFile(event));
     }
 
-    private void onClickBtnImgCreateRace(Event event){
+    private void onClickBtnImgCreateRace(Event event) {
         try {
             new parametersRaceView().start(new Stage());
             ((Stage) btnImgCreateRace.getScene().getWindow()).close();
@@ -34,12 +34,12 @@ public class mainController extends baseController {
         }
     }
 
-    public void onClickBtnImgLoadFile(Event event){
+    public void onClickBtnImgLoadFile(Event event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Race Files", "*.race"));
         File selectedFile = fileChooser.showOpenDialog(new Stage());
-        if(selectedFile != null){
+        if (selectedFile != null) {
             try {
                 Race.getInstance().load(selectedFile.getAbsolutePath());
                 new homeView().start(new Stage());
@@ -47,10 +47,8 @@ public class mainController extends baseController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
     }
-    }
-
-
 
 
 }

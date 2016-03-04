@@ -25,57 +25,56 @@ public class RankingController extends baseController {
     private ObservableList<Ranking> tbRankingData;
 
 
-
     @FXML
-    public void initialize(){
+    public void initialize() {
 
         initTableView();
         initTableViewValue();
         initAllTeamsListener();
     }
 
-    private void initTableView(){
+    private void initTableView() {
         tbRankingData = FXCollections.observableArrayList();
         TableColumn dossardCol = new TableColumn("Dos");
         dossardCol.setCellValueFactory(new PropertyValueFactory<Ranking, String>("dossard"));
-        dossardCol.setStyle( "-fx-alignment: CENTER;");
-        dossardCol.setStyle( "-fx-font-size: 16;");
+        dossardCol.setStyle("-fx-alignment: CENTER;");
+        dossardCol.setStyle("-fx-font-size: 16;");
         dossardCol.prefWidthProperty().bind(tbRanking.widthProperty().divide(7));
 
         TableColumn runner1Col = new TableColumn("Runner 1");
         runner1Col.setCellValueFactory(new PropertyValueFactory<Ranking, String>("runner1"));
-        runner1Col.setStyle( "-fx-alignment: CENTER;");
-        runner1Col.setStyle( "-fx-font-size: 16;");
+        runner1Col.setStyle("-fx-alignment: CENTER;");
+        runner1Col.setStyle("-fx-font-size: 16;");
         runner1Col.prefWidthProperty().bind(tbRanking.widthProperty().divide(7));
 
         TableColumn runner2Col = new TableColumn("Runner 2");
         runner2Col.setCellValueFactory(new PropertyValueFactory<Ranking, String>("runner2"));
-        runner2Col.setStyle( "-fx-alignment: CENTER;");
-        runner2Col.setStyle( "-fx-font-size: 16;");
+        runner2Col.setStyle("-fx-alignment: CENTER;");
+        runner2Col.setStyle("-fx-font-size: 16;");
         runner2Col.prefWidthProperty().bind(tbRanking.widthProperty().divide(7));
 
         TableColumn courseCol = new TableColumn("Parcours");
         courseCol.setCellValueFactory(new PropertyValueFactory<Ranking, String>("course"));
-        courseCol.setStyle( "-fx-alignment: CENTER;");
-        courseCol.setStyle( "-fx-font-size: 16;");
+        courseCol.setStyle("-fx-alignment: CENTER;");
+        courseCol.setStyle("-fx-font-size: 16;");
         courseCol.prefWidthProperty().bind(tbRanking.widthProperty().divide(7));
 
         TableColumn rankingCourseCol = new TableColumn("Classement Parcours");
         rankingCourseCol.setCellValueFactory(new PropertyValueFactory<Ranking, String>("rankingCourse"));
-        rankingCourseCol.setStyle( "-fx-alignment: CENTER;");
-        rankingCourseCol.setStyle( "-fx-font-size: 16;");
+        rankingCourseCol.setStyle("-fx-alignment: CENTER;");
+        rankingCourseCol.setStyle("-fx-font-size: 16;");
         rankingCourseCol.prefWidthProperty().bind(tbRanking.widthProperty().divide(7));
 
         TableColumn averageSpeedCol = new TableColumn("Vitesse moyenne");
         averageSpeedCol.setCellValueFactory(new PropertyValueFactory<Ranking, String>("averageSpeed"));
-        averageSpeedCol.setStyle( "-fx-alignment: CENTER;");
-        averageSpeedCol.setStyle( "-fx-font-size: 16;");
+        averageSpeedCol.setStyle("-fx-alignment: CENTER;");
+        averageSpeedCol.setStyle("-fx-font-size: 16;");
         averageSpeedCol.prefWidthProperty().bind(tbRanking.widthProperty().divide(7));
 
         TableColumn timeCol = new TableColumn("Temps");
         timeCol.setCellValueFactory(new PropertyValueFactory<Ranking, String>("timeStr"));
-        timeCol.setStyle( "-fx-alignment: CENTER;");
-        timeCol.setStyle( "-fx-font-size: 16;");
+        timeCol.setStyle("-fx-alignment: CENTER;");
+        timeCol.setStyle("-fx-font-size: 16;");
         timeCol.prefWidthProperty().bind(tbRanking.widthProperty().divide(7));
 
         tbRanking.getColumns().addAll(dossardCol, runner1Col, runner2Col, courseCol, rankingCourseCol, averageSpeedCol, timeCol);
@@ -83,20 +82,20 @@ public class RankingController extends baseController {
         tbRanking.setItems(tbRankingData);
     }
 
-    private void initTableViewValue(){
+    private void initTableViewValue() {
         tbRankingData.clear();
-        for(Course course: Race.getInstance().getCourses()){
+        for (Course course : Race.getInstance().getCourses()) {
             ArrayList<Ranking> rankings = new ArrayList<>();
-            for(Team team: course.getTeams()){
-                if(course.getNumberOfTurns() == team.getEndTime().size() && team.isRegistrationValidated()){
-                    Ranking ranking = new Ranking(team.getDossard(), team.getRunner1(), team.getRunner2(), team.getStartTime(), team.getEndTime().get(team.getEndTime().size()-1), course);
+            for (Team team : course.getTeams()) {
+                if (course.getNumberOfTurns() == team.getEndTime().size() && team.isRegistrationValidated()) {
+                    Ranking ranking = new Ranking(team.getDossard(), team.getRunner1(), team.getRunner2(), team.getStartTime(), team.getEndTime().get(team.getEndTime().size() - 1), course);
                     tbRankingData.add(ranking);
                     rankings.add(ranking);
                 }
             }
             rankings.sort((o1, o2) -> (int) (o1.getTime() - o2.getTime()));
             int rankingCourse = 1;
-            for(Ranking item: rankings){
+            for (Ranking item : rankings) {
                 tbRankingData.get(tbRankingData.indexOf(item)).setRankingCourse(rankingCourse);
                 rankingCourse++;
 
@@ -107,9 +106,9 @@ public class RankingController extends baseController {
 
     }
 
-    private void initAllTeamsListener(){
-        for(Course course: Race.getInstance().getCourses()){
-            for(Team team: course.getTeams()){
+    private void initAllTeamsListener() {
+        for (Course course : Race.getInstance().getCourses()) {
+            for (Team team : course.getTeams()) {
                 team.addListener(new TeamListener() {
                     @Override
                     public void dossardChanged(int dossard) {
@@ -146,7 +145,7 @@ public class RankingController extends baseController {
 
     }
 
-    protected class Ranking{
+    protected class Ranking {
         private int dossard;
         private Runner runner1;
         private Runner runner2;
@@ -188,8 +187,8 @@ public class RankingController extends baseController {
             return course;
         }
 
-        public String getAverageSpeed(){
-            return round(((float) course.getKm()) / ((float)(endTime - startTime)/(float)(1000*60*60)),2) + " km/h";
+        public String getAverageSpeed() {
+            return round(((float) course.getKm()) / ((float) (endTime - startTime) / (float) (1000 * 60 * 60)), 2) + " km/h";
         }
 
         public int getRankingCourse() {
@@ -200,13 +199,14 @@ public class RankingController extends baseController {
             this.rankingCourse = rankingCourse;
         }
 
-        public String getTimeStr(){
+        public String getTimeStr() {
             DateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
             sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-            return  sdf.format(endTime - startTime);
+            return sdf.format(endTime - startTime);
         }
-        public long getTime(){
-            return  endTime - startTime;
+
+        public long getTime() {
+            return endTime - startTime;
         }
     }
 }

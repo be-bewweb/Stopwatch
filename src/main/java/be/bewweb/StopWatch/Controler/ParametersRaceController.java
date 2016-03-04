@@ -18,7 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-import java.io.*;
+import java.io.File;
 import java.util.Optional;
 
 /**
@@ -49,7 +49,7 @@ public class ParametersRaceController extends baseController {
     private ObservableList<Course> tbListCourseData;
 
 
-    public void initialize(){
+    public void initialize() {
         btnChooseFile.setOnAction(event -> onClickBtnChooseFile(event));
         btnCreateRace.setOnAction(event -> onClickBtnCreateRace(event));
         btnCreateCourse.setOnAction(event -> onClickBtnCreateCourse(event));
@@ -60,8 +60,8 @@ public class ParametersRaceController extends baseController {
         tbListCourse.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
-                    if(mouseEvent.getClickCount() == 2){
+                if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                    if (mouseEvent.getClickCount() == 2) {
                         onclickOnItemTbListCourse(mouseEvent);
                     }
                 }
@@ -85,14 +85,14 @@ public class ParametersRaceController extends baseController {
         tbListCourse.getColumns().addAll(nameCol, kmCol, numberOfTurnsCol);
 
         tbListCourseData = FXCollections.observableArrayList();
-        for (Course course: Race.getInstance().getCourses()) {
+        for (Course course : Race.getInstance().getCourses()) {
             tbListCourseData.add(course);
             refreshListWhenSomethingChange(course);
         }
         tbListCourse.setItems(tbListCourseData);
     }
 
-    private void refreshListWhenSomethingChange(Course course){
+    private void refreshListWhenSomethingChange(Course course) {
         course.addListener(new CourseListener() {
             @Override
             public void nameChanged(java.lang.String name) {
@@ -116,30 +116,31 @@ public class ParametersRaceController extends baseController {
         });
     }
 
-    public void onClickBtnChooseFile(Event event){
+    public void onClickBtnChooseFile(Event event) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File dirSelected = directoryChooser.showDialog(new Stage());
         if (dirSelected != null) {
             txtPathToRace.setText(dirSelected.toString());
         }
     }
-    public void onClickBtnCreateRace(Event event){
-        if(txtNameOfRace.getText() == null){
+
+    public void onClickBtnCreateRace(Event event) {
+        if (txtNameOfRace.getText() == null) {
             txtNameOfRace.setStyle("-fx-border-color: red");
             return;
-        }else{
+        } else {
             txtNameOfRace.setStyle("-fx-border-color: transparent");
         }
-        if(txtPathToRace.getText() == null){
+        if (txtPathToRace.getText() == null) {
             txtPathToRace.setStyle("-fx-border-color: red");
             return;
-        }else{
+        } else {
             txtNameOfRace.setStyle("-fx-border-color: transparent");
         }
-        if(tbListCourseData.isEmpty()){
+        if (tbListCourseData.isEmpty()) {
             tbListCourse.setStyle("-fx-border-color: red");
             return;
-        }else{
+        } else {
             tbListCourse.setStyle("-fx-border-color: transparent");
         }
 
@@ -154,46 +155,46 @@ public class ParametersRaceController extends baseController {
         }
     }
 
-    public void onClickBtnCreateCourse(Event event){
+    public void onClickBtnCreateCourse(Event event) {
         boolean canCreate = true;
-        if(txtCourseName.getText().equals("")){
+        if (txtCourseName.getText().equals("")) {
             txtCourseName.setStyle("-fx-border-color: red");
             canCreate = false;
-        }else{
+        } else {
             txtCourseName.setStyle("-fx-border: none");
         }
-        if(txtCourseKm.getText().equals("")){
+        if (txtCourseKm.getText().equals("")) {
             txtCourseKm.setStyle("-fx-border-color: red");
             canCreate = false;
-        }else{
+        } else {
             txtCourseKm.setStyle("-fx-border: none");
         }
-        if(txtCourseNumberOfTurns.getText().equals("")){
+        if (txtCourseNumberOfTurns.getText().equals("")) {
             txtCourseNumberOfTurns.setStyle("-fx-border-color: red");
             canCreate = false;
-        }else{
+        } else {
             txtCourseNumberOfTurns.setStyle("-fx-border: none");
         }
-        try{
-            if(Float.parseFloat(txtCourseKm.getText()) <= 0){
-                throw new  NumberFormatException();
+        try {
+            if (Float.parseFloat(txtCourseKm.getText()) <= 0) {
+                throw new NumberFormatException();
             }
             txtCourseKm.setStyle("-fx-border: none");
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             txtCourseKm.setStyle("-fx-border-color: red");
             canCreate = false;
         }
-        try{
-            if(Integer.parseInt(txtCourseNumberOfTurns.getText()) <= 0){
-                throw new  NumberFormatException();
+        try {
+            if (Integer.parseInt(txtCourseNumberOfTurns.getText()) <= 0) {
+                throw new NumberFormatException();
             }
             txtCourseNumberOfTurns.setStyle("-fx-border: none");
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             txtCourseNumberOfTurns.setStyle("-fx-border-color: red");
             canCreate = false;
         }
 
-        if(canCreate){
+        if (canCreate) {
             Course course = new Course(txtCourseName.getText(), Float.parseFloat(txtCourseKm.getText()), Integer.parseInt(txtCourseNumberOfTurns.getText()));
             Race.getInstance().addCourse(course);
             tbListCourseData.add(course);
@@ -204,15 +205,16 @@ public class ParametersRaceController extends baseController {
             txtCourseName.requestFocus();
         }
     }
-    public void onClickBtnRemoveCourse(Event event){
+
+    public void onClickBtnRemoveCourse(Event event) {
         Course course = (Course) tbListCourse.getSelectionModel().getSelectedItem();
-        if(course != null){
+        if (course != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation");
             alert.setHeaderText("Vous êtes sur le points de supprimer un parcours !");
-            alert.setContentText("Le parcours que vous souhaitez supprimer contient " + course.getTeams().size() + " équipe"+ ((course.getTeams().size() > 1)? "s" : "") +". Souhaitez-vous le supprimer ?" );
+            alert.setContentText("Le parcours que vous souhaitez supprimer contient " + course.getTeams().size() + " équipe" + ((course.getTeams().size() > 1) ? "s" : "") + ". Souhaitez-vous le supprimer ?");
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
+            if (result.get() == ButtonType.OK) {
                 Race.getInstance().removeCourse(course);
                 tbListCourse.getItems().remove(course);
             } else {
@@ -221,21 +223,23 @@ public class ParametersRaceController extends baseController {
         }
     }
 
-    public void onActionTxtCourseName(Event event){
+    public void onActionTxtCourseName(Event event) {
         onClickBtnCreateCourse(event);
     }
-    public void onActionTxtCourseKm(Event event){
+
+    public void onActionTxtCourseKm(Event event) {
         onClickBtnCreateCourse(event);
     }
-    public void onActionTxtCourseNumberOfTurns(Event event){
+
+    public void onActionTxtCourseNumberOfTurns(Event event) {
         onClickBtnCreateCourse(event);
     }
 
 
-    public void onclickOnItemTbListCourse(Event event){
-            Stage stage = new Stage();
-            stage.setUserData(tbListCourse.getSelectionModel().getSelectedItem());
-            new CategoryView().start(stage);
+    public void onclickOnItemTbListCourse(Event event) {
+        Stage stage = new Stage();
+        stage.setUserData(tbListCourse.getSelectionModel().getSelectedItem());
+        new CategoryView().start(stage);
     }
 
 }

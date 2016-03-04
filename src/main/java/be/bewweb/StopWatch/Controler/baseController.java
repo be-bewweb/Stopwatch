@@ -1,6 +1,5 @@
 package be.bewweb.StopWatch.Controler;
 
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
@@ -8,7 +7,17 @@ import javafx.stage.Stage;
  */
 public class baseController {
     private Stage stage;
-    public void setStage(Stage stage) { this.stage = stage; }
-    public Stage getStage(){ return this.stage;}
-    public void initialized(){};
+
+    public Stage getStage() {
+        return this.stage;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    public void initialized() {
+    }
+
+    ;
 }

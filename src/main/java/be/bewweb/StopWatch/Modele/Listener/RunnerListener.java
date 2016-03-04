@@ -1,7 +1,5 @@
 package be.bewweb.StopWatch.Modele.Listener;
 
-import be.bewweb.StopWatch.Modele.Runner;
-
 import java.util.Date;
 
 /**
@@ -9,7 +7,10 @@ import java.util.Date;
  */
 public interface RunnerListener {
     public void nameChanged(String name);
+
     public void firstnameChanged(String firstname);
+
     public void sexChanged(boolean isMan);
+
     public void birthDateChanged(Date birthDate);
 }

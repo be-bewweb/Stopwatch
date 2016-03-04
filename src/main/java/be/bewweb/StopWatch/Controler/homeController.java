@@ -9,7 +9,10 @@ import be.bewweb.StopWatch.Modele.Race;
 import be.bewweb.StopWatch.Modele.Runner;
 import be.bewweb.StopWatch.Modele.Team;
 import be.bewweb.StopWatch.Utils.GenerateRanking;
-import be.bewweb.StopWatch.View.*;
+import be.bewweb.StopWatch.View.EncodeView;
+import be.bewweb.StopWatch.View.ManageTeamView;
+import be.bewweb.StopWatch.View.RankingView;
+import be.bewweb.StopWatch.View.parametersRaceView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -29,7 +32,9 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Optional;
 
 public class homeController extends baseController {
     @FXML
@@ -60,7 +65,7 @@ public class homeController extends baseController {
     private RaceListener raceListener;
 
     @FXML
-    public void initialize(){
+    public void initialize() {
 
         //Event
         btnAdd.setOnAction(event -> onClickBtnAdd(event));
@@ -73,8 +78,8 @@ public class homeController extends baseController {
         tbListTeam.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
-                    if(mouseEvent.getClickCount() == 2){
+                if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                    if (mouseEvent.getClickCount() == 2) {
                         onClickBtnShow(mouseEvent);
                     }
                 }
@@ -89,7 +94,7 @@ public class homeController extends baseController {
 
     }
 
-    private void initRace(){
+    private void initRace() {
         raceListener = new RaceListener() {
             @Override
             public void nameChanged(String name) {
@@ -116,14 +121,17 @@ public class homeController extends baseController {
         Race.getInstance().addListener(raceListener);
         lblNameRace.setText(Race.getInstance().getName());
     }
-    public void initCourses(){
-        for (Course course : Race.getInstance().getCourses()){
+
+    public void initCourses() {
+        for (Course course : Race.getInstance().getCourses()) {
             course.addListener(new CourseListener() {
                 @Override
-                public void nameChanged(String name) {}
+                public void nameChanged(String name) {
+                }
 
                 @Override
-                public void kmChanged(float km) {}
+                public void kmChanged(float km) {
+                }
 
                 @Override
                 public void teamAdded(Team team) {
@@ -138,7 +146,8 @@ public class homeController extends baseController {
             });
         }
     }
-    private void initTableView(){
+
+    private void initTableView() {
         TableColumn dossardCol = new TableColumn("Dos");
         dossardCol.setCellValueFactory(new PropertyValueFactory<Team, String>("dossard"));
         dossardCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(4));
@@ -157,10 +166,11 @@ public class homeController extends baseController {
 
         tbListTeam.getColumns().addAll(dossardCol, runner1Col, runner2Col, registrationValidatedCol);
     }
-    private void setContentInTableView(){
+
+    private void setContentInTableView() {
         tbListTeamData = FXCollections.observableArrayList();
-        for (Course course : Race.getInstance().getCourses()){
-            for(Team team: course.getTeams()) {
+        for (Course course : Race.getInstance().getCourses()) {
+            for (Team team : course.getTeams()) {
 
                 team.addListener(new TeamListener() {
                     @Override
@@ -195,7 +205,7 @@ public class homeController extends baseController {
                     }
                 });
 
-                try{
+                try {
                     team.getRunner1().addListener(new RunnerListener() {
                         @Override
                         public void nameChanged(String name) {
@@ -217,10 +227,10 @@ public class homeController extends baseController {
                             tbListTeam.refresh();
                         }
                     });
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     //Runner1 = null
                 }
-                try{
+                try {
                     team.getRunner2().addListener(new RunnerListener() {
                         @Override
                         public void nameChanged(String name) {
@@ -242,7 +252,7 @@ public class homeController extends baseController {
                             tbListTeam.refresh();
                         }
                     });
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     //Runner2 = null
                 }
 
@@ -251,36 +261,38 @@ public class homeController extends baseController {
         }
         tbListTeam.setItems(tbListTeamData);
     }
-    private void initTabPane(){
+
+    private void initTabPane() {
         tpCourse.getTabs().removeAll();
-        for (Course course : Race.getInstance().getCourses()){
-            try{
+        for (Course course : Race.getInstance().getCourses()) {
+            try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/be/bewweb/StopWatch/View/home/detailsCourse.fxml"));
                 fxmlLoader.setController(new detailsCourseController(course));
                 Tab tab = new Tab();
                 tab.setText(course.toString());
                 tab.setContent(fxmlLoader.load());
                 tpCourse.getTabs().add(tab);
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
                 //Do nothing
             }
         }
     }
 
-    public void onClickBtnAdd(Event event){
+    public void onClickBtnAdd(Event event) {
         new ManageTeamView().start(new Stage());
     }
-    public void onClickBtnRemove(Event event){
+
+    public void onClickBtnRemove(Event event) {
         Team team = (Team) tbListTeam.getSelectionModel().getSelectedItem();
-        if(team != null){
+        if (team != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation");
             alert.setHeaderText("Vous êtes sur le points de supprimer une équipe !");
-            alert.setContentText("Attention, cette équipe sera définitivement supprimée. Souhaitez-vous la supprimer ?" );
+            alert.setContentText("Attention, cette équipe sera définitivement supprimée. Souhaitez-vous la supprimer ?");
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
-                for(Course course:Race.getInstance().getCourses()){
+            if (result.get() == ButtonType.OK) {
+                for (Course course : Race.getInstance().getCourses()) {
                     course.removeTeam(team);
                 }
                 Race.getInstance().save();
@@ -289,28 +301,32 @@ public class homeController extends baseController {
             }
         }
     }
-    public void onClickBtnShow(Event event){
-        try{
+
+    public void onClickBtnShow(Event event) {
+        try {
             Stage stage = new Stage();
             stage.setUserData(tbListTeam.getSelectionModel().getSelectedItem());
             new ManageTeamView().start(stage);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
             //Not item selected
         }
     }
-    public void onClickBtnEncode(Event event){
+
+    public void onClickBtnEncode(Event event) {
         new EncodeView().start(new Stage());
     }
-    public void onClickBtnShowRanking(Event event){
+
+    public void onClickBtnShowRanking(Event event) {
         new RankingView().start(new Stage());
     }
 
-    public void onClickMenuItemModifyRace(Event event){
+    public void onClickMenuItemModifyRace(Event event) {
         ((Stage) btnAdd.getScene().getWindow()).close();
         new parametersRaceView().start(new Stage());
     }
-    public void onClickMenuItemGenerateAllRanking(Event event){
+
+    public void onClickMenuItemGenerateAllRanking(Event event) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File dirSelected = directoryChooser.showDialog(new Stage());
         if (dirSelected != null) {
@@ -318,20 +334,20 @@ public class homeController extends baseController {
         }
     }
 
-    private void generateAllRanking(String pathDir){
-        for (Course course: Race.getInstance().getCourses()) {
+    private void generateAllRanking(String pathDir) {
+        for (Course course : Race.getInstance().getCourses()) {
             new GenerateRanking(course).generate(pathDir);
         }
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Classement généré");
         alert.setHeaderText("Classement généré !");
-        alert.setContentText("Tous les classements ont été généré. Souhaitez-vous ouvrir le dossier dans l'explorateur ?" );
+        alert.setContentText("Tous les classements ont été généré. Souhaitez-vous ouvrir le dossier dans l'explorateur ?");
         alert.getButtonTypes().remove(ButtonType.OK);
         alert.getButtonTypes().remove(ButtonType.CANCEL);
         alert.getButtonTypes().add(ButtonType.YES);
         alert.getButtonTypes().add(ButtonType.NO);
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.YES){
+        if (result.get() == ButtonType.YES) {
             try {
                 Desktop.getDesktop().open(new File(pathDir));
             } catch (IOException e) {

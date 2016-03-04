@@ -15,17 +15,19 @@ import java.io.IOException;
 public class CategoryView extends Application {
 
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     @Override
-    public void start(Stage primaryStage){
-        try{
+    public void start(Stage primaryStage) {
+        try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/be/bewweb/StopWatch/View/Category.fxml"));
             Parent root = (Parent) fxmlLoader.load();
             final baseController myController = (baseController) fxmlLoader.getController();
             myController.setStage(primaryStage);
-            primaryStage.addEventHandler(WindowEvent.WINDOW_SHOWING, new  EventHandler<WindowEvent>()
-            {
-                public void handle(WindowEvent window)
-                {
+            primaryStage.addEventHandler(WindowEvent.WINDOW_SHOWING, new EventHandler<WindowEvent>() {
+                public void handle(WindowEvent window) {
                     myController.initialized();
                 }
             });
@@ -40,9 +42,5 @@ public class CategoryView extends Application {
             e.printStackTrace();
         }
 
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

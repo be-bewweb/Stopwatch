@@ -61,19 +61,16 @@ public class ManageTeamController extends baseController {
     private Team currentTeam = null;
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         btnSaveAndNew.setOnAction(event -> onClickBtnSaveAndNew(event));
         btnSaveAndClose.setOnAction(event -> onClickBtnSaveAndClose(event));
         btnClose.setOnAction(event -> onClickBtnClose(event));
         txtDossard.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue)
-                {
+                if (newValue) {
 
-                }
-                else
-                {
+                } else {
                     onFocusLostTxtDossard();
                 }
             }
@@ -87,25 +84,25 @@ public class ManageTeamController extends baseController {
     }
 
     @Override
-    public void initialized(){
+    public void initialized() {
         loadTeam((Team) getStage().getUserData());
     }
 
-    public void onClickBtnClose(Event event){
+    public void onClickBtnClose(Event event) {
         getStage().close();
     }
 
-    private boolean saveTeam(){
-        if(!txtStartTime.getText().matches("([0-3]?[0-9]\\/[0-1]?[0-9]\\/[0-9]{4} [0-9]{0,2}:[0-9]{0,2}:[0-9]{0,2})?")){
+    private boolean saveTeam() {
+        if (!txtStartTime.getText().matches("([0-3]?[0-9]\\/[0-1]?[0-9]\\/[0-9]{4} [0-9]{0,2}:[0-9]{0,2}:[0-9]{0,2})?")) {
             txtStartTime.setStyle("-fx-border-color: red");
             return false;
         }
 
-        if(isNotEmpty(txtName1) && isNotEmpty(txtName2) && isNotEmpty(txtFirstname1) && isNotEmpty(txtFirstname2) && isNotEmpty(txtDossard) && isNotEmpty(dateBorn1) && isNotEmpty(dateBorn2) && isNotEmpty(cbCourse) && isNotEmpty(cbSex1) && isNotEmpty(cbSex2)){
-            try{
-                Runner runner1 = (currentTeam != null && currentTeam.getRunner1() != null)? currentTeam.getRunner1() : new Runner();
-                Runner runner2 = (currentTeam != null && currentTeam.getRunner2() != null)? currentTeam.getRunner2() : new Runner();
-                Team team = (currentTeam != null)? currentTeam : new Team();
+        if (isNotEmpty(txtName1) && isNotEmpty(txtName2) && isNotEmpty(txtFirstname1) && isNotEmpty(txtFirstname2) && isNotEmpty(txtDossard) && isNotEmpty(dateBorn1) && isNotEmpty(dateBorn2) && isNotEmpty(cbCourse) && isNotEmpty(cbSex1) && isNotEmpty(cbSex2)) {
+            try {
+                Runner runner1 = (currentTeam != null && currentTeam.getRunner1() != null) ? currentTeam.getRunner1() : new Runner();
+                Runner runner2 = (currentTeam != null && currentTeam.getRunner2() != null) ? currentTeam.getRunner2() : new Runner();
+                Team team = (currentTeam != null) ? currentTeam : new Team();
 
                 runner1.setName(txtName1.getText());
                 runner1.setFirstname(txtFirstname1.getText());
@@ -122,30 +119,31 @@ public class ManageTeamController extends baseController {
                 team.setRunner2(runner2);
                 team.setRegistrationValidated(chbRegistrationValidated.isSelected());
 
-                if(!txtStartTime.getText().equals("")){
+                if (!txtStartTime.getText().equals("")) {
                     long timestampUTC = getTimestamp(convertLocalTimeToUTC(txtStartTime.getText(), "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss.SSS"), "dd/MM/yyyy HH:mm:ss.SSS");
                     team.setStartTime(timestampUTC);
                 }
 
                 Course course = (Course) cbCourse.getSelectionModel().getSelectedItem();
-                if(currentTeam == null){
+                if (currentTeam == null) {
                     course.addTeam(team);
                 }
                 Race.getInstance().save();
                 return true;
 
-            }catch (ParseException e){
+            } catch (ParseException e) {
                 e.printStackTrace();
                 return false;
             }
         }
         return false;
     }
-    private void loadTeam(Team team){
-        for(Course course : Race.getInstance().getCourses()){
-            for(Team t: course.getTeams()){
-                try{
-                    if(t == team) {
+
+    private void loadTeam(Team team) {
+        for (Course course : Race.getInstance().getCourses()) {
+            for (Team t : course.getTeams()) {
+                try {
+                    if (t == team) {
                         currentTeam = team;
                         cbCourse.getSelectionModel().select(course);
                         txtDossard.setText(team.getDossard() + "");
@@ -160,39 +158,41 @@ public class ManageTeamController extends baseController {
                         dateBorn2.setValue(LocalDateTime.ofInstant(team.getRunner2().getBirthDate().toInstant(), ZoneId.systemDefault()).toLocalDate());
                         chbRegistrationValidated.selectedProperty().setValue(team.isRegistrationValidated());
                         try {
-                            txtStartTime.setText(convertUTCToLocalTime(getUTCTime(team.getStartTime(),"dd/MM/yyyy HH:mm:ss.SSS"),"dd/MM/yyyy HH:mm:ss.SSS", "dd/MM/yyyy HH:mm:ss"));
-                        }catch (ParseException e){
+                            txtStartTime.setText(convertUTCToLocalTime(getUTCTime(team.getStartTime(), "dd/MM/yyyy HH:mm:ss.SSS"), "dd/MM/yyyy HH:mm:ss.SSS", "dd/MM/yyyy HH:mm:ss"));
+                        } catch (ParseException e) {
                             txtStartTime.setText("");
                         }
 
                         return;
                     }
-                }catch(NumberFormatException e){
+                } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
         }
     }
 
-    public void onClickBtnSaveAndNew(Event event){
-        if(saveTeam()){
+    public void onClickBtnSaveAndNew(Event event) {
+        if (saveTeam()) {
             new ManageTeamView().start(new Stage());
             onClickBtnClose(event);
         }
     }
-    public void onClickBtnSaveAndClose(Event event){
-        if(saveTeam()){
+
+    public void onClickBtnSaveAndClose(Event event) {
+        if (saveTeam()) {
             onClickBtnClose(event);
         }
     }
-    public void onFocusLostTxtDossard(){
-        for(Course course : Race.getInstance().getCourses()){
-            for(Team team: course.getTeams()){
-                try{
-                    if(team.getDossard() == Integer.parseInt(txtDossard.getText())) {
+
+    public void onFocusLostTxtDossard() {
+        for (Course course : Race.getInstance().getCourses()) {
+            for (Team team : course.getTeams()) {
+                try {
+                    if (team.getDossard() == Integer.parseInt(txtDossard.getText())) {
                         loadTeam(team);
                     }
-                }catch(NumberFormatException e){
+                } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
             }

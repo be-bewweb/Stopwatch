@@ -12,16 +12,18 @@ import javafx.stage.WindowEvent;
 
 public class homeView extends Application {
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/be/bewweb/StopWatch/View/home/home.fxml"));
         Parent root = (Parent) fxmlLoader.load();
         final baseController myController = (baseController) fxmlLoader.getController();
         myController.setStage(primaryStage);
-        primaryStage.addEventHandler(WindowEvent.WINDOW_SHOWING, new  EventHandler<WindowEvent>()
-        {
-            public void handle(WindowEvent window)
-            {
+        primaryStage.addEventHandler(WindowEvent.WINDOW_SHOWING, new EventHandler<WindowEvent>() {
+            public void handle(WindowEvent window) {
                 myController.initialized();
             }
         });
@@ -33,9 +35,5 @@ public class homeView extends Application {
         primaryStage.sizeToScene();
         primaryStage.show();
 
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

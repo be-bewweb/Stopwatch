@@ -1,8 +1,6 @@
 package be.bewweb.StopWatch.Modele;
 
 import be.bewweb.StopWatch.Modele.Listener.CourseListener;
-import be.bewweb.StopWatch.Modele.Listener.RaceListener;
-import com.google.gson.annotations.Expose;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -50,20 +48,21 @@ public class Course implements Serializable {
     }
 
     public Category getCategory() {
-        if(this.category == null){
+        if (this.category == null) {
             this.category = new Category();
         }
         return this.category;
     }
 
-    public void  addTeam(Team team){
-        if(!this.teams.contains(team)) {
+    public void addTeam(Team team) {
+        if (!this.teams.contains(team)) {
             this.teams.add(team);
             fireTeamAdded(team);
         }
     }
-    public boolean removeTeam(Team team){
-        if(this.teams.contains(team)) {
+
+    public boolean removeTeam(Team team) {
+        if (this.teams.contains(team)) {
             this.teams.remove(team);
             fireTeamRemoved(team);
             return true;
@@ -77,31 +76,34 @@ public class Course implements Serializable {
     }
 
     protected void fireTeamAdded(Team team) {
-        if(this.courseListeners != null){
+        if (this.courseListeners != null) {
             ArrayList<CourseListener> courseListeners = (ArrayList) this.courseListeners.clone();
             for (CourseListener listener : courseListeners) {
                 listener.teamAdded(team);
             }
         }
     }
+
     protected void fireTeamRemoved(Team team) {
-        if(this.courseListeners != null){
+        if (this.courseListeners != null) {
             ArrayList<CourseListener> courseListeners = (ArrayList) this.courseListeners.clone();
             for (CourseListener listener : courseListeners) {
                 listener.teamRemoved(team);
             }
         }
     }
+
     protected void fireKmChanged() {
-        if(this.courseListeners != null){
+        if (this.courseListeners != null) {
             ArrayList<CourseListener> courseListeners = (ArrayList) this.courseListeners.clone();
             for (CourseListener listener : courseListeners) {
                 listener.kmChanged(this.km);
             }
         }
     }
+
     protected void fireNameChanged() {
-        if(this.courseListeners != null){
+        if (this.courseListeners != null) {
             ArrayList<CourseListener> courseListeners = (ArrayList) this.courseListeners.clone();
             for (CourseListener listener : courseListeners) {
                 listener.nameChanged(this.name);
@@ -110,7 +112,7 @@ public class Course implements Serializable {
     }
 
     public void addListener(CourseListener courseListener) {
-        if(this.courseListeners == null){
+        if (this.courseListeners == null) {
             this.courseListeners = new ArrayList<>();
         }
         this.courseListeners.add(courseListener);

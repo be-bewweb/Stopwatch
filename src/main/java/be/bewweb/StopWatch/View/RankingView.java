@@ -22,15 +22,13 @@ public class RankingView extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        try{
+        try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/be/bewweb/StopWatch/View/Ranking.fxml"));
             Parent root = (Parent) fxmlLoader.load();
             final baseController myController = (baseController) fxmlLoader.getController();
             myController.setStage(primaryStage);
-            primaryStage.addEventHandler(WindowEvent.WINDOW_SHOWING, new  EventHandler<WindowEvent>()
-            {
-                public void handle(WindowEvent window)
-                {
+            primaryStage.addEventHandler(WindowEvent.WINDOW_SHOWING, new EventHandler<WindowEvent>() {
+                public void handle(WindowEvent window) {
                     myController.initialized();
                 }
             });

@@ -2,7 +2,6 @@ package be.bewweb.StopWatch.Utils;
 
 import be.bewweb.StopWatch.Modele.Course;
 import be.bewweb.StopWatch.Modele.Team;
-import javafx.scene.control.Alert;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -21,25 +20,25 @@ public class GenerateRanking {
 
     private Course course;
     private ArrayList<Team> familyA;
-    private ArrayList<Team>  familyB;
-    private ArrayList<Team>  youngA;
-    private ArrayList<Team>  youngB;
-    private ArrayList<Team>  youngC;
-    private ArrayList<Team>  adult;
+    private ArrayList<Team> familyB;
+    private ArrayList<Team> youngA;
+    private ArrayList<Team> youngB;
+    private ArrayList<Team> youngC;
+    private ArrayList<Team> adult;
 
-    private ArrayList<Team>  young;
-    private ArrayList<Team>  senior;
-    private ArrayList<Team>  veteranA;
-    private ArrayList<Team>  veteranB;
-    private ArrayList<Team>  women;
-    private ArrayList<Team>  mixed;
+    private ArrayList<Team> young;
+    private ArrayList<Team> senior;
+    private ArrayList<Team> veteranA;
+    private ArrayList<Team> veteranB;
+    private ArrayList<Team> women;
+    private ArrayList<Team> mixed;
 
 
     public GenerateRanking(Course course) {
         this.course = course;
     }
 
-    private void generateCategories(){
+    private void generateCategories() {
         familyA = new ArrayList<>();
         familyB = new ArrayList<>();
         youngA = new ArrayList<>();
@@ -55,15 +54,15 @@ public class GenerateRanking {
         mixed = new ArrayList<>();
 
 
-        int sAdult =  course.getCategory().getAdult();
-        int sChild =   course.getCategory().getChild();
+        int sAdult = course.getCategory().getAdult();
+        int sChild = course.getCategory().getChild();
 
-        int sYoung =   course.getCategory().getYoung();
-        int sSenior =   course.getCategory().getSenior();
-        int sVeteranA =   course.getCategory().getVeteranA();
+        int sYoung = course.getCategory().getYoung();
+        int sSenior = course.getCategory().getSenior();
+        int sVeteranA = course.getCategory().getVeteranA();
 
-        for(Team team : course.getTeams()){
-            if(team.getEndTime().size() == course.getNumberOfTurns() && team.isRegistrationValidated()) {
+        for (Team team : course.getTeams()) {
+            if (team.getEndTime().size() == course.getNumberOfTurns() && team.isRegistrationValidated()) {
                 //Familles A : A moins de 12 ans - B plus de 16 ans.
                 if (team.getRunner1().getAge() < sChild && team.getRunner2().getAge() > sAdult) {
                     familyA.add(team);
@@ -141,32 +140,32 @@ public class GenerateRanking {
         }
     }
 
-    private void sortCategory(){
-        familyA.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size()-1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size()-1) - o2.getStartTime())));
-        familyB.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size()-1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size()-1) - o2.getStartTime())));
-        youngA.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size()-1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size()-1) - o2.getStartTime())));
-        youngB.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size()-1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size()-1) - o2.getStartTime())));
-        youngC.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size()-1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size()-1) - o2.getStartTime())));
-        adult.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size()-1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size()-1) - o2.getStartTime())));
-        young.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size()-1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size()-1) - o2.getStartTime())));
-        senior.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size()-1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size()-1) - o2.getStartTime())));
-        veteranA.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size()-1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size()-1) - o2.getStartTime())));
-        veteranB.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size()-1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size()-1) - o2.getStartTime())));
-        women.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size()-1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size()-1) - o2.getStartTime())));
-        mixed.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size()-1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size()-1) - o2.getStartTime())));
+    private void sortCategory() {
+        familyA.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        familyB.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        youngA.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        youngB.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        youngC.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        adult.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        young.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        senior.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        veteranA.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        veteranB.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        women.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        mixed.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
     }
 
-    private String getHTMLRanking(String name, ArrayList<Team> ranking){
+    private String getHTMLRanking(String name, ArrayList<Team> ranking) {
         String res = "<html><head><meta charset=\"UTF-8\" /><link rel=\"stylesheet\" href=\"bootstrap.min.css\" /></head><body><div class=\"table-responsive\"><table class=\"table table-striped\"><thead><tr><th colspan=\"9\">" +
-                "<h1>"+name+"</h1>" +
+                "<h1>" + name + "</h1>" +
                 "</th></tr></thead><tbody><tr><th width=\"5%\"></th><th width=\"5%\">Dos.</th><th width=\"15%\">Nom</th><th width=\"15%\">Prénom</th><th width=\"15%\">Nom</th><th width=\"15%\">Prénom</th><th width=\"10%\">Temps</th></tr>";
-        int i= 1;
-        for (Team team: ranking){
+        int i = 1;
+        for (Team team : ranking) {
             DateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
             sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-            String time =  sdf.format(team.getEndTime().get(team.getEndTime().size()-1) - team.getStartTime());
+            String time = sdf.format(team.getEndTime().get(team.getEndTime().size() - 1) - team.getStartTime());
 
-            res += "<tr><td>"+i+"</td><td>"+team.getDossard()+"</td><td>"+team.getRunner1().getName()+"</td><td>"+team.getRunner1().getFirstname()+"("+team.getRunner1().getAge()+"ans)</td><td>"+team.getRunner2().getName()+"</td><td>"+team.getRunner2().getFirstname()+" ("+team.getRunner2().getAge()+"ans)</td><td>"+time+"</td></tr>";
+            res += "<tr><td>" + i + "</td><td>" + team.getDossard() + "</td><td>" + team.getRunner1().getName() + "</td><td>" + team.getRunner1().getFirstname() + "(" + team.getRunner1().getAge() + "ans)</td><td>" + team.getRunner2().getName() + "</td><td>" + team.getRunner2().getFirstname() + " (" + team.getRunner2().getAge() + "ans)</td><td>" + time + "</td></tr>";
             i++;
         }
 
@@ -175,53 +174,53 @@ public class GenerateRanking {
     }
 
     private void generateFile(ArrayList<Team> ranking, String rankingName, String path) throws IOException {
-            if(ranking.size() > 0){
-                Writer writer = new OutputStreamWriter(new FileOutputStream(new File(path)),  Charset.forName("UTF-8"));
-                writer.write(this.getHTMLRanking(rankingName, ranking));
-                writer.close();
-            }
+        if (ranking.size() > 0) {
+            Writer writer = new OutputStreamWriter(new FileOutputStream(new File(path)), Charset.forName("UTF-8"));
+            writer.write(this.getHTMLRanking(rankingName, ranking));
+            writer.close();
+        }
     }
 
     private void extractFile(InputStream source, File dest) throws IOException {
 
-            Path temp = Files.createTempFile("resource-", ".ext");
-            Files.copy(source, temp, StandardCopyOption.REPLACE_EXISTING);
-            FileInputStream sourceFile = new FileInputStream(temp.toFile());
+        Path temp = Files.createTempFile("resource-", ".ext");
+        Files.copy(source, temp, StandardCopyOption.REPLACE_EXISTING);
+        FileInputStream sourceFile = new FileInputStream(temp.toFile());
 
-                java.io.FileOutputStream destinationFile = null;
+        java.io.FileOutputStream destinationFile = null;
 
-                    destinationFile = new FileOutputStream(dest);
+        destinationFile = new FileOutputStream(dest);
 
-                    // Lecture par segment de 0.5Mo
-                    byte buffer[] = new byte[512 * 1024];
-                    int nbLecture;
+        // Lecture par segment de 0.5Mo
+        byte buffer[] = new byte[512 * 1024];
+        int nbLecture;
 
-                    while ((nbLecture = sourceFile.read(buffer)) != -1){
-                        destinationFile.write(buffer, 0, nbLecture);
-                    }
-                    destinationFile.close();
-                sourceFile.close();
+        while ((nbLecture = sourceFile.read(buffer)) != -1) {
+            destinationFile.write(buffer, 0, nbLecture);
+        }
+        destinationFile.close();
+        sourceFile.close();
     }
 
-    public boolean generate(String path){
+    public boolean generate(String path) {
         generateCategories();
         sortCategory();
-        new File(path+"/"+course.getName()).mkdir();
-        String completPath = path+File.separator.toString()+course.getName()+File.separator.toString();
-        try{
-            extractFile(getClass().getResourceAsStream("/be/bewweb/StopWatch/resources/bootstrap.min.css"), new File(completPath+"bootstrap.min.css"));
-            generateFile(familyA, "Famille A", completPath+"familyA.html");
-            generateFile(familyB, "Famille B", completPath+"familyb.html");
-            generateFile(youngA, "Jeune A", completPath+"youngA.html");
-            generateFile(youngB, "Jeune B", completPath+"youngB.html");
-            generateFile(youngC, "Jeune C", completPath+"youngC.html");
-            generateFile(adult, "Adulte", completPath+"adult.html");
-            generateFile(young, "Jeune", completPath+"young-master.html");
-            generateFile(senior, "Senior", completPath+"senior-master.html");
-            generateFile(veteranA, "Vétéran A", completPath+"veteranA-master.html");
-            generateFile(veteranB, "Vétéran B", completPath+"veteranB-master.html");
-            generateFile(women, "Fille", completPath+"women-master.html");
-            generateFile(mixed, "Mixte", completPath+"mixed-master.html");
+        new File(path + "/" + course.getName()).mkdir();
+        String completPath = path + File.separator.toString() + course.getName() + File.separator.toString();
+        try {
+            extractFile(getClass().getResourceAsStream("/be/bewweb/StopWatch/resources/bootstrap.min.css"), new File(completPath + "bootstrap.min.css"));
+            generateFile(familyA, "Famille A", completPath + "familyA.html");
+            generateFile(familyB, "Famille B", completPath + "familyb.html");
+            generateFile(youngA, "Jeune A", completPath + "youngA.html");
+            generateFile(youngB, "Jeune B", completPath + "youngB.html");
+            generateFile(youngC, "Jeune C", completPath + "youngC.html");
+            generateFile(adult, "Adulte", completPath + "adult.html");
+            generateFile(young, "Jeune", completPath + "young-master.html");
+            generateFile(senior, "Senior", completPath + "senior-master.html");
+            generateFile(veteranA, "Vétéran A", completPath + "veteranA-master.html");
+            generateFile(veteranB, "Vétéran B", completPath + "veteranB-master.html");
+            generateFile(women, "Fille", completPath + "women-master.html");
+            generateFile(mixed, "Mixte", completPath + "mixed-master.html");
         } catch (IOException e) {
             e.printStackTrace();
             return false;

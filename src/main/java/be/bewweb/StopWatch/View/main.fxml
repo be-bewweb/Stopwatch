@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -9,39 +9,42 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
-
-<GridPane gridLinesVisible="true" hgap="10" nodeOrientation="LEFT_TO_RIGHT" vgap="10" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.bewweb.StopWatch.Controler.mainController">
-   <children>
-      <Pane prefHeight="264.0" prefWidth="449.0">
-         <children>
-            <ImageView fx:id="btnImgCreateRace" fitHeight="150.0" fitWidth="200.0" layoutX="36.0" layoutY="100.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: transparent;">
-               <image>
-                  <Image url="@../resources/Add-New-256.png" />
-               </image>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </ImageView>
-            <ImageView fx:id="btnImgLoadRace" fitHeight="150.0" fitWidth="200.0" layoutX="264.0" layoutY="100.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: transparent;">
-               <image>
-                  <Image url="@../resources/Document-Download-02-256.png" />
-               </image>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </ImageView>
-            <Label layoutX="108.0" layoutY="14.0" text="StopWatch" textFill="#7d7d7d">
-               <font>
-                  <Font size="48.0" />
-               </font>
-            </Label>
-         </children>
-      </Pane>
-   </children>
-   <columnConstraints>
-      <ColumnConstraints />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints />
-   </rowConstraints>
+<GridPane xmlns:fx="http://javafx.com/fxml/1" gridLinesVisible="true" hgap="10" nodeOrientation="LEFT_TO_RIGHT"
+          vgap="10" xmlns="http://javafx.com/javafx/null"
+          fx:controller="be.bewweb.StopWatch.Controler.mainController">
+    <children>
+        <Pane prefHeight="264.0" prefWidth="449.0">
+            <children>
+                <ImageView fx:id="btnImgCreateRace" fitHeight="150.0" fitWidth="200.0" layoutX="36.0" layoutY="100.0"
+                           pickOnBounds="true" preserveRatio="true" style="-fx-border-color: transparent;">
+                    <image>
+                        <Image url="@../resources/Add-New-256.png"/>
+                    </image>
+                    <cursor>
+                        <Cursor fx:constant="HAND"/>
+                    </cursor>
+                </ImageView>
+                <ImageView fx:id="btnImgLoadRace" fitHeight="150.0" fitWidth="200.0" layoutX="264.0" layoutY="100.0"
+                           pickOnBounds="true" preserveRatio="true" style="-fx-border-color: transparent;">
+                    <image>
+                        <Image url="@../resources/Document-Download-02-256.png"/>
+                    </image>
+                    <cursor>
+                        <Cursor fx:constant="HAND"/>
+                    </cursor>
+                </ImageView>
+                <Label layoutX="108.0" layoutY="14.0" text="StopWatch" textFill="#7d7d7d">
+                    <font>
+                        <Font size="48.0"/>
+                    </font>
+                </Label>
+            </children>
+        </Pane>
+    </children>
+    <columnConstraints>
+        <ColumnConstraints/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints/>
+    </rowConstraints>
 </GridPane>
