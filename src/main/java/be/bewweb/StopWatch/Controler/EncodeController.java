@@ -10,11 +10,13 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import static be.bewweb.StopWatch.Utils.Time.getTimestamp;
@@ -40,7 +42,7 @@ public class EncodeController extends baseController {
         btnArrived.setOnAction(event -> onClickBtnArrived(event));
         txtDossard.setOnKeyPressed(event -> onKeyPressedTxtDossard(event));
         txtDossard.setOnAction(event -> onActionTxtDossard(event));
-
+        initDeleteItemTableView();
         initTableView();
         initTableViewValue();
 
@@ -69,7 +71,7 @@ public class EncodeController extends baseController {
         turnCol.prefWidthProperty().bind(tbListTeamLog.widthProperty().divide(5));
 
         TableColumn timeCol = new TableColumn("Temps");
-        timeCol.setCellValueFactory(new PropertyValueFactory<TeamLog, String>("timeStr"));
+        timeCol.setCellValueFactory(new PropertyValueFactory<TeamLog, String>("durationStr"));
         timeCol.setStyle("-fx-alignment: CENTER;");
         timeCol.prefWidthProperty().bind(tbListTeamLog.widthProperty().divide(5));
 
@@ -91,17 +93,62 @@ public class EncodeController extends baseController {
 
     }
 
+    private void initDeleteItemTableView() {
+        tbListTeamLog.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.DELETE) {
+                onTeamLogDeleted();
+            }
+        });
+    }
+
+    private void onTeamLogDeleted() {
+        TeamLog teamLog = (TeamLog) tbListTeamLog.getSelectionModel().getSelectedItem();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Voulez-vous supprimer le temps de cette équipe ?");
+        alert.setContentText("Vous souhaitez supprimer le tour numéro " + teamLog.getTurn() + " de l'équipe portant le dossard " + teamLog.getDossard() + ". Cette action est irréversible !");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            boolean deleted = false;
+            tbListTeamLogData.remove(teamLog);
+            for (Course course : Race.getInstance().getCourses()) {
+                for (Team team : course.getTeams()) {
+                    if (team.getDossard() == teamLog.getDossard()) {
+                        try {
+                            team.removeEndTime(team.getEndTime().get(teamLog.getTurn() - 1));
+                            deleted = true;
+                        } catch (Exception e) {
+                            //do nothing
+                        }
+                    }
+                }
+            }
+            if (!deleted) {
+                alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Temps non supprimé !");
+                alert.setHeaderText("Impossible de supprimer le temps demandé !");
+                alert.setContentText("Une erreur s'est produite lors de la suppression du temps demandé. Veuillez réessayer !");
+                alert.show();
+            } else {
+                tbListTeamLog.refresh();
+                Race.getInstance().save();
+            }
+        } else {
+            // ... user chose CANCEL or closed the dialog
+        }
+    }
+
     private void initTableViewValue() {
         for (Course course : Race.getInstance().getCourses()) {
             for (Team team : course.getTeams()) {
                 int turn = 1;
-                for (long time : team.getEndTime()) {
-                    tbListTeamLogData.add(new TeamLog(team.getDossard(), team.getRunner1().toString(), team.getRunner2().toString(), turn, course.getNumberOfTurns(), time - team.getStartTime()));
+                for (long endTime : team.getEndTime()) {
+                    tbListTeamLogData.add(new TeamLog(team.getDossard(), team.getRunner1().toString(), team.getRunner2().toString(), turn, course.getNumberOfTurns(), team.getTime(turn), endTime));
                     turn++;
                 }
             }
         }
-        tbListTeamLogData.sort((o1, o2) -> (int) (o1.getTime() - o2.getTime()));
+        tbListTeamLogData.sort((o1, o2) -> (int) (o1.getEndTime() - o2.getEndTime()));
     }
 
     private void onClickBtnArrived(Event event) {
@@ -111,57 +158,64 @@ public class EncodeController extends baseController {
             lblInfo.setText("Numéro de dossard nécessaire");
             return;
         }
-
-        boolean found = false;
-        for (Course course : Race.getInstance().getCourses()) {
-            for (Team team : course.getTeams()) {
-                if (course.getNumberOfTurns() > team.getEndTime().size()) {
-                    try {
-                        if (team.getDossard() == Integer.parseInt(txtDossard.getText())) {
+        try {
+            boolean found = false;
+            boolean maxTurn = false;
+            for (Course course : Race.getInstance().getCourses()) {
+                for (Team team : course.getTeams()) {
+                    if (team.getDossard() == Integer.parseInt(txtDossard.getText())) {
+                        found = true;
+                        if (course.getNumberOfTurns() > team.getEndTime().size()) {
+                            DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
+                            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            Date date = sdf.parse(sdf.format(new Date()));
+                            long timestampUTC = getTimestamp(sdf.format(date), "dd/MM/yyyy HH:mm:ss.SSS");
+                            team.addEndTime(timestampUTC);
 
                             if (!team.isRegistrationValidated()) {
                                 lblInfo.setText("Inscription non validé");
-                                return;
                             }
+                            tbListTeamLogData.addAll(new TeamLog(team.getDossard(), team.getRunner1().toString(), team.getRunner2().toString(), team.getEndTime().size(), course.getNumberOfTurns(), team.getTime(), team.getEndTime().get(team.getEndTime().size() - 1)));
 
-                            try {
-                                DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
-                                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-                                Date date = sdf.parse(sdf.format(new Date()));
-                                long timestampUTC = getTimestamp(sdf.format(date), "dd/MM/yyyy HH:mm:ss.SSS");
-                                team.addEndTime(timestampUTC);
-
-                                txtDossard.setStyle("-fx-background-color: green");
-                                txtDossard.setText("");
-                                lblInfo.setText("");
-                                txtDossard.requestFocus();
-
-                                tbListTeamLogData.addAll(new TeamLog(team.getDossard(), team.getRunner1().toString(), team.getRunner2().toString(), team.getEndTime().size(), course.getNumberOfTurns(), date.getTime() - team.getStartTime()));
-
-                                Race.getInstance().save();
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
+                            Race.getInstance().save();
                             return;
+                        }else{
+                            maxTurn = true;
                         }
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
+                        break;
                     }
                 }
+                if(found) break;
             }
-        }
-
-        if (!found) {
+            if (!found) {
+                lblInfo.setText("Dossard introuvable");
+                txtDossard.setText("");
+                txtDossard.setStyle("-fx-background-color: orange");
+                txtDossard.requestFocus();
+            }else{
+                if(maxTurn){
+                    txtDossard.setStyle("-fx-background-color: green");
+                    txtDossard.setText("");
+                    lblInfo.setText("Course déjà terminé !");
+                    txtDossard.requestFocus();
+                }else{
+                    txtDossard.setStyle("-fx-background-color: green");
+                    txtDossard.setText("");
+                    lblInfo.setText("");
+                    txtDossard.requestFocus();
+                }
+            }
+        } catch (Exception e) {
+            lblInfo.setText("Une erreur est survenue !");
             txtDossard.setText("");
             txtDossard.setStyle("-fx-background-color: orange");
             txtDossard.requestFocus();
-            return;
+            e.printStackTrace();
         }
-
     }
 
     private void onKeyPressedTxtDossard(Event event) {
-        txtDossard.setStyle("-fx-background-color: transparent");
+        txtDossard.getStyleClass().removeAll();
     }
 
     private void onActionTxtDossard(Event event) {
@@ -174,15 +228,17 @@ public class EncodeController extends baseController {
         private String runner2;
         private int turn;
         private int turnTot;
-        private long time;
+        private long duration;
+        private long endTime;
 
-        public TeamLog(int dossard, String runner1, String runner2, int turn, int turnTot, long time) {
+        public TeamLog(int dossard, String runner1, String runner2, int turn, int turnTot, long duration, long endTime) {
             this.dossard = dossard;
             this.runner1 = runner1;
             this.runner2 = runner2;
             this.turn = turn;
             this.turnTot = turnTot;
-            this.time = time;
+            this.duration = duration;
+            this.endTime = endTime;
         }
 
         public int getDossard() {
@@ -201,14 +257,26 @@ public class EncodeController extends baseController {
             return this.turn + "/" + this.turnTot;
         }
 
-        public String getTimeStr() {
-            DateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
-            sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-            return sdf.format(time);
+        public int getTurn() {
+            return turn;
         }
 
-        public long getTime() {
-            return time;
+        public String getDurationStr() {
+            DateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+            sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+            return sdf.format(duration);
+        }
+
+        public long getDuration() {
+            return duration;
+        }
+
+        public long getEndTime() {
+            return endTime;
+        }
+
+        public void setEndTime(long endTime) {
+            this.endTime = endTime;
         }
     }
 

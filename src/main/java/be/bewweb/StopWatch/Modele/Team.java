@@ -80,6 +80,12 @@ public class Team implements Serializable {
         }
     }
 
+    public void removeEndTime(long endTime){
+            if(this.endTime.remove(endTime)){
+                fireEndTimeChanged();
+            }
+    }
+
     public boolean isRegistrationValidated() {
         return registrationValidated;
     }
@@ -91,6 +97,27 @@ public class Team implements Serializable {
         }
     }
 
+    public long getTime(){
+        return this.endTime.get(this.endTime.size()-1) - this.startTime;
+    }
+
+    public long getTime(int turn){
+        return this.endTime.get(turn-1) - this.startTime;
+    }
+
+    public String getType(){
+        if(this.runner1.isMan() && this.runner2.isMan()){
+            return "Masculin";
+        }
+        if(!this.runner1.isMan() && !this.runner2.isMan()){
+            return "Féminin";
+        }
+        return "Mixte";
+    }
+
+    public int getNumberOfTurns(){
+        return this.endTime.size();
+    }
     //Listener
     public void addListener(TeamListener teamListener) {
         if (this.teamListeners == null) {

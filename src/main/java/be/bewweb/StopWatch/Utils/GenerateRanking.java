@@ -32,6 +32,7 @@ public class GenerateRanking {
     private ArrayList<Team> veteranB;
     private ArrayList<Team> women;
     private ArrayList<Team> mixed;
+    private ArrayList<Team> mainRanking;
 
 
     public GenerateRanking(Course course) {
@@ -53,6 +54,8 @@ public class GenerateRanking {
         women = new ArrayList<>();
         mixed = new ArrayList<>();
 
+        mainRanking = new ArrayList<>();
+
 
         int sAdult = course.getCategory().getAdult();
         int sChild = course.getCategory().getChild();
@@ -63,6 +66,9 @@ public class GenerateRanking {
 
         for (Team team : course.getTeams()) {
             if (team.getEndTime().size() == course.getNumberOfTurns() && team.isRegistrationValidated()) {
+                //mainRanking
+                mainRanking.add(team);
+
                 //Familles A : A moins de 12 ans - B plus de 16 ans.
                 if (team.getRunner1().getAge() < sChild && team.getRunner2().getAge() > sAdult) {
                     familyA.add(team);
@@ -153,33 +159,51 @@ public class GenerateRanking {
         veteranB.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
         women.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
         mixed.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        mainRanking.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
     }
 
-    private String getHTMLRanking(String name, ArrayList<Team> ranking) {
-        String res = "<html><head><meta charset=\"UTF-8\" /><link rel=\"stylesheet\" href=\"bootstrap.min.css\" /></head><body><div class=\"table-responsive\"><table class=\"table table-striped\"><thead><tr><th colspan=\"9\">" +
-                "<h1>" + name + "</h1>" +
-                "</th></tr></thead><tbody><tr><th width=\"5%\"></th><th width=\"5%\">Dos.</th><th width=\"15%\">Nom</th><th width=\"15%\">Prénom</th><th width=\"15%\">Nom</th><th width=\"15%\">Prénom</th><th width=\"10%\">Temps</th></tr>";
-        int i = 1;
-        for (Team team : ranking) {
-            DateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
-            sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-            String time = sdf.format(team.getEndTime().get(team.getEndTime().size() - 1) - team.getStartTime());
-
-            res += "<tr><td>" + i + "</td><td>" + team.getDossard() + "</td><td>" + team.getRunner1().getName() + "</td><td>" + team.getRunner1().getFirstname() + "(" + team.getRunner1().getAge() + "ans)</td><td>" + team.getRunner2().getName() + "</td><td>" + team.getRunner2().getFirstname() + " (" + team.getRunner2().getAge() + "ans)</td><td>" + time + "</td></tr>";
-            i++;
-        }
-
-        res += "</tbody></table></div></body></html>";
-        return res;
-    }
-
-    private void generateFile(ArrayList<Team> ranking, String rankingName, String path) throws IOException {
+    private void generateHTMLfile(ArrayList<Team> ranking, String rankingName, String path) throws IOException {
         if (ranking.size() > 0) {
+            String res = "<html><head><meta charset=\"UTF-8\" /><link rel=\"stylesheet\" href=\"bootstrap.min.css\" /></head><body><div class=\"table-responsive\"><table style=\"font-size: 10px!important;\" class=\"table table-bordered\"><thead><tr><th colspan=\"9\">" +
+                    "<h1>" + rankingName + "</h1>" +
+                    "</th></tr></thead><tbody><tr><th width=\"5%\"></th><th width=\"5%\">Dos.</th><th width=\"15%\">Nom</th><th width=\"15%\">Prénom</th><th width=\"15%\">Nom</th><th width=\"15%\">Prénom</th><th width=\"10%\">Temps</th><th width=\"10%\">Type</th></tr>";
+            int i = 1;
+            for (Team team : ranking) {
+                DateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+                String time = sdf.format(team.getEndTime().get(team.getEndTime().size() - 1) - team.getStartTime());
+
+                res += "<tr><td>" + i + "</td><td>" + team.getDossard() + "</td><td>" + team.getRunner1().getName() + "</td><td>" + team.getRunner1().getFirstname() + "</td><td>" + team.getRunner2().getName() + "</td><td>" + team.getRunner2().getFirstname() + "</td><td>" + time + "</td><td>" + team.getType() + "</td></tr>";
+                i++;
+            }
+
+            res += "</tbody></table></div></body></html>";
+
             Writer writer = new OutputStreamWriter(new FileOutputStream(new File(path)), Charset.forName("UTF-8"));
-            writer.write(this.getHTMLRanking(rankingName, ranking));
+            writer.write(res);
             writer.close();
+
         }
     }
+    private void generateCSVfile(ArrayList<Team> ranking, String rankingName, String path) throws IOException {
+        if (ranking.size() > 0) {
+            String res = "#;Dossart;Parcours;Nom;Prénom;Nom;Prénom;Type;Catégorie;Temps"+System.getProperty("line.separator");
+            int i = 1;
+            for (Team team : ranking) {
+                DateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+                String time = sdf.format(team.getTime());
+                res += "" + i + ";" + team.getDossard() + ";"+course.getKm()+";" + team.getRunner1().getName() + ";" + team.getRunner1().getFirstname() + ";" + team.getRunner2().getName() + ";" + team.getRunner2().getFirstname() + ";"+course.getCategory().getCategoryOfTeam(team)+";" + team.getType()+ ";" + time + System.getProperty("line.separator");
+                i++;
+            }
+
+            Writer writer = new OutputStreamWriter(new FileOutputStream(new File(path)), Charset.forName("UTF-16LE"));
+            writer.write(res);
+            writer.close();
+
+        }
+    }
+
 
     private void extractFile(InputStream source, File dest) throws IOException {
 
@@ -209,18 +233,20 @@ public class GenerateRanking {
         String completPath = path + File.separator.toString() + course.getName() + File.separator.toString();
         try {
             extractFile(getClass().getResourceAsStream("/be/bewweb/StopWatch/resources/bootstrap.min.css"), new File(completPath + "bootstrap.min.css"));
-            generateFile(familyA, "Famille A", completPath + "familyA.html");
-            generateFile(familyB, "Famille B", completPath + "familyb.html");
-            generateFile(youngA, "Jeune A", completPath + "youngA.html");
-            generateFile(youngB, "Jeune B", completPath + "youngB.html");
-            generateFile(youngC, "Jeune C", completPath + "youngC.html");
-            generateFile(adult, "Adulte", completPath + "adult.html");
-            generateFile(young, "Jeune", completPath + "young-master.html");
-            generateFile(senior, "Senior", completPath + "senior-master.html");
-            generateFile(veteranA, "Vétéran A", completPath + "veteranA-master.html");
-            generateFile(veteranB, "Vétéran B", completPath + "veteranB-master.html");
-            generateFile(women, "Fille", completPath + "women-master.html");
-            generateFile(mixed, "Mixte", completPath + "mixed-master.html");
+            generateHTMLfile(familyA, "Famille A", completPath + "familyA.html");
+            generateHTMLfile(familyB, "Famille B", completPath + "familyb.html");
+            generateHTMLfile(youngA, "Jeune A", completPath + "youngA.html");
+            generateHTMLfile(youngB, "Jeune B", completPath + "youngB.html");
+            generateHTMLfile(youngC, "Jeune C", completPath + "youngC.html");
+            generateHTMLfile(adult, "Adulte", completPath + "adult.html");
+            generateHTMLfile(young, "Jeune", completPath + "young-master.html");
+            generateHTMLfile(senior, "Senior", completPath + "senior-master.html");
+            generateHTMLfile(veteranA, "Vétéran A", completPath + "veteranA-master.html");
+            generateHTMLfile(veteranB, "Vétéran B", completPath + "veteranB-master.html");
+            generateHTMLfile(women, "Fille", completPath + "women-master.html");
+            generateHTMLfile(mixed, "Mixte", completPath + "mixed-master.html");
+            generateHTMLfile(mainRanking, "Classement général", completPath + "general.html");
+            generateCSVfile(mainRanking, "Classement général", completPath + "general.csv");
         } catch (IOException e) {
             e.printStackTrace();
             return false;

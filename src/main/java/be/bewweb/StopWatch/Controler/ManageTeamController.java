@@ -186,17 +186,18 @@ public class ManageTeamController extends baseController {
     }
 
     public void onFocusLostTxtDossard() {
-        for (Course course : Race.getInstance().getCourses()) {
-            for (Team team : course.getTeams()) {
-                try {
-                    if (team.getDossard() == Integer.parseInt(txtDossard.getText())) {
+        try {
+            int dossard = Integer.parseInt(txtDossard.getText());
+            for (Course course : Race.getInstance().getCourses()) {
+                for (Team team : course.getTeams()) {
+                    if (team.getDossard() == dossard) {
                         loadTeam(team);
                     }
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
                 }
             }
+        } catch (NumberFormatException e) {
+            //do nothing
         }
-    }
 
+    }
 }

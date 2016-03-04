@@ -4,12 +4,11 @@ import be.bewweb.StopWatch.Modele.Category;
 import be.bewweb.StopWatch.Modele.Course;
 import be.bewweb.StopWatch.Modele.Race;
 import be.bewweb.StopWatch.Modele.Team;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 public class CategoryController extends baseController {
 
@@ -78,6 +77,11 @@ public class CategoryController extends baseController {
     @FXML
     private Button btnSave;
 
+    @FXML
+    private RadioButton radioCourseFamily;
+    @FXML
+    private RadioButton radioCourseMaster;
+
     private Course currentCourse;
 
     @FXML
@@ -89,7 +93,6 @@ public class CategoryController extends baseController {
         sliderVeteranA.valueProperty().addListener((observable, oldValue, newValue) -> onValueChangedSliderVeteranA(newValue));
         btnReset.setOnAction(event -> onClickBtnReset(event));
         btnSave.setOnAction(event -> onClickBtnSave(event));
-
     }
 
     @Override
@@ -102,6 +105,13 @@ public class CategoryController extends baseController {
         txtCourseKm.setText(currentCourse.getKm() + "");
         txtCourseName.setText(currentCourse.getName());
         txtCourseNumberOfTurns.setText(currentCourse.getNumberOfTurns() + "");
+
+        final ToggleGroup radioGroup = new ToggleGroup();
+        radioCourseFamily.setToggleGroup(radioGroup);
+        radioCourseMaster.setToggleGroup(radioGroup);
+        radioCourseMaster.setSelected(currentCourse.getCategory().isMaster());
+        radioCourseFamily.setSelected(!currentCourse.getCategory().isMaster());
+
     }
 
     private void initCategory() {
@@ -297,6 +307,7 @@ public class CategoryController extends baseController {
             currentCourse.getCategory().setYoung((int) sliderYoung.getValue());
             currentCourse.getCategory().setSenior((int) sliderSenior.getValue());
             currentCourse.getCategory().setVeteranA((int) sliderVeteranA.getValue());
+            currentCourse.getCategory().setMaster(radioCourseMaster.isSelected());
 
             currentCourse.setName(txtCourseName.getText());
             currentCourse.setKm(Float.parseFloat(txtCourseKm.getText()));

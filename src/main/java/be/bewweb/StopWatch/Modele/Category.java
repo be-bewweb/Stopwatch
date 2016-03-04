@@ -9,6 +9,7 @@ public class Category {
     int young;
     int senior;
     int veteranA;
+    boolean master;
 
     public Category() {
         this.adult = 16;
@@ -56,5 +57,76 @@ public class Category {
 
     public void setVeteranA(int veteranA) {
         this.veteranA = veteranA;
+    }
+
+    public boolean isMaster() {
+        return master;
+    }
+
+    public void setMaster(boolean master) {
+        this.master = master;
+    }
+
+    public String getCategoryOfTeam(Team team){
+        if(isMaster()){
+            //Un classement général avec mention des catégories (moyenne d?âge des deux équipiers).
+            float avrAge = ((float) team.getRunner1().getAge() + team.getRunner2().getAge()) / ((float) 2);
+            //Jeunes : moins de 21 ans
+            if (avrAge < this.young) {
+                return "Jeune";
+            }
+            //Seniors : plus ou égal à 21 ans et moins de 40 ans
+            if (avrAge >= this.young && avrAge < this.senior) {
+                return "Senior";
+            }
+            //Vétérans A : plus ou égal à 40 ans et moins de 50 ans
+            if (avrAge >= this.senior && avrAge < this.veteranA) {
+                return "Vétéran A";
+            }
+            //Vétérans B : plus de 50 ans
+            if (avrAge >= this.veteranA) {
+                return "Vétéran B";
+            }
+        }else{
+            //Familles A : A moins de 12 ans - B plus de 16 ans.
+            if (team.getRunner1().getAge() < this.child && team.getRunner2().getAge() > this.adult) {
+                return "Famille A";
+            }
+            if (team.getRunner2().getAge() < this.child && team.getRunner1().getAge() > this.adult) {
+                return "Famille A";
+            }
+
+            //Familles B : A entre 12 et 16 ans - B plus de 16 ans.
+            if (team.getRunner1().getAge() >= this.child && team.getRunner1().getAge() <= this.adult && team.getRunner2().getAge() > this.adult) {
+                return "Famille B";
+            }
+            if (team.getRunner2().getAge() >= this.child && team.getRunner2().getAge() <= this.adult && team.getRunner1().getAge() > this.adult) {
+                return "Famille B";
+            }
+
+            //Jeunes A : A et B moins de 12 ans.
+            if (team.getRunner1().getAge() < this.child && team.getRunner2().getAge() < this.child) {
+                return "Jeune A";
+            }
+
+            //Jeunes B : A moins de 12 - B entre 12 et 16 ans.
+            if (team.getRunner1().getAge() >= this.child && team.getRunner1().getAge() <= this.adult && team.getRunner2().getAge() < this.child) {
+                return "Jeune B";
+            }
+            if (team.getRunner2().getAge() >= this.child && team.getRunner2().getAge() <= this.adult && team.getRunner1().getAge() < this.child) {
+                return "Jeune B";
+            }
+
+            //Jeunes C : A et B entre 12 et 16 ans.
+            if (team.getRunner1().getAge() >= this.child && team.getRunner1().getAge() <= this.adult && team.getRunner2().getAge() >= this.child && team.getRunner2().getAge() <= this.adult) {
+                return "Jeune C";
+            }
+
+            //Adultes : les équipes dont les 2 ont plus de 16 ans seront reprises dans un classement à part et seront récompensées.
+            if (team.getRunner1().getAge() > this.adult && team.getRunner2().getAge() > this.adult) {
+                return "Adulte";
+            }
+        }
+        return "N/A";
     }
 }
