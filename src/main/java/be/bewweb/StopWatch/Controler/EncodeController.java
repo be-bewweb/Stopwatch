@@ -2,6 +2,7 @@ package be.bewweb.StopWatch.Controler;
 
 import be.bewweb.StopWatch.Modele.Course;
 import be.bewweb.StopWatch.Modele.Race;
+import be.bewweb.StopWatch.Modele.Runner;
 import be.bewweb.StopWatch.Modele.Team;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -15,9 +16,7 @@ import javafx.scene.input.KeyCode;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
-import java.util.TimeZone;
+import java.util.*;
 
 import static be.bewweb.StopWatch.Utils.Time.getTimestamp;
 
@@ -42,6 +41,11 @@ public class EncodeController extends baseController {
         btnArrived.setOnAction(event -> onClickBtnArrived(event));
         txtDossard.setOnKeyPressed(event -> onKeyPressedTxtDossard(event));
         txtDossard.setOnAction(event -> onActionTxtDossard(event));
+        btnArrived.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnArrived(event);
+            }
+        });
         initDeleteItemTableView();
         initTableView();
         initTableViewValue();
@@ -115,7 +119,7 @@ public class EncodeController extends baseController {
                 for (Team team : course.getTeams()) {
                     if (team.getDossard() == teamLog.getDossard()) {
                         try {
-                            team.removeEndTime(team.getEndTime().get(teamLog.getTurn() - 1));
+                            team.removeEndTime(teamLog.getEndTime());
                             deleted = true;
                         } catch (Exception e) {
                             //do nothing
@@ -143,7 +147,7 @@ public class EncodeController extends baseController {
             for (Team team : course.getTeams()) {
                 int turn = 1;
                 for (long endTime : team.getEndTime()) {
-                    tbListTeamLogData.add(new TeamLog(team.getDossard(), team.getRunner1().toString(), team.getRunner2().toString(), turn, course.getNumberOfTurns(), team.getTime(turn), endTime));
+                    tbListTeamLogData.add(new TeamLog(team.getDossard(), team.getRunner1(), team.getRunner2(), turn, course.getNumberOfTurns(), team.getTime(turn), endTime));
                     turn++;
                 }
             }
@@ -151,65 +155,67 @@ public class EncodeController extends baseController {
         tbListTeamLogData.sort((o1, o2) -> (int) (o1.getEndTime() - o2.getEndTime()));
     }
 
+    private void UIDossard(String message, String color){
+        lblInfo.setText(message);
+        txtDossard.setText("");
+        txtDossard.setStyle("-fx-background-color: "+color);
+        txtDossard.requestFocus();
+    }
+
     private void onClickBtnArrived(Event event) {
+
         if (txtDossard.getText().equals("")) {
-            txtDossard.setStyle("-fx-background-color: red");
-            txtDossard.requestFocus();
-            lblInfo.setText("Numéro de dossard nécessaire");
+            UIDossard("Numéro de dossard nécessaire", "red");
             return;
         }
-        try {
-            boolean found = false;
+
+
+        try{
+            int dossard = Integer.parseInt(txtDossard.getText());
+            Team teamFound = null;
+            Course courseFound = null;
             boolean maxTurn = false;
-            for (Course course : Race.getInstance().getCourses()) {
-                for (Team team : course.getTeams()) {
-                    if (team.getDossard() == Integer.parseInt(txtDossard.getText())) {
-                        found = true;
-                        if (course.getNumberOfTurns() > team.getEndTime().size()) {
-                            DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
-                            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            Date date = sdf.parse(sdf.format(new Date()));
-                            long timestampUTC = getTimestamp(sdf.format(date), "dd/MM/yyyy HH:mm:ss.SSS");
-                            team.addEndTime(timestampUTC);
 
-                            if (!team.isRegistrationValidated()) {
-                                lblInfo.setText("Inscription non validé");
-                            }
-                            tbListTeamLogData.addAll(new TeamLog(team.getDossard(), team.getRunner1().toString(), team.getRunner2().toString(), team.getEndTime().size(), course.getNumberOfTurns(), team.getTime(), team.getEndTime().get(team.getEndTime().size() - 1)));
+            DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = sdf.parse(sdf.format(new Date()));
+            long timestampUTC = getTimestamp(sdf.format(date), "dd/MM/yyyy HH:mm:ss.SSS");
 
-                            Race.getInstance().save();
-                            return;
-                        }else{
-                            maxTurn = true;
-                        }
-                        break;
+
+            Iterator<Course> courses = Race.getInstance().getCourses().iterator();
+            while(courses.hasNext() && teamFound == null){
+                Course course = courses.next();
+                Iterator<Team> teams = course.getTeams().iterator();
+                while (teams.hasNext() && teamFound == null){
+                    Team team = teams.next();
+                    if(dossard == team.getDossard()){
+                            teamFound = team;
+                            courseFound = course;
                     }
                 }
-                if(found) break;
             }
-            if (!found) {
-                lblInfo.setText("Dossard introuvable");
-                txtDossard.setText("");
-                txtDossard.setStyle("-fx-background-color: orange");
-                txtDossard.requestFocus();
-            }else{
-                if(maxTurn){
-                    txtDossard.setStyle("-fx-background-color: green");
-                    txtDossard.setText("");
-                    lblInfo.setText("Course déjà terminé !");
-                    txtDossard.requestFocus();
+
+            if(teamFound == null){
+                teamFound = new Team();
+                teamFound.setDossard(dossard);
+                teamFound.setRegistrationValidated(true);
+                courseFound = Race.getInstance().getCourses().get(0);
+                courseFound.addTeam(teamFound);
+                UIDossard("Dossard introuvable", "green");
+            }else {
+                if(teamFound.getEndTime().size() >= courseFound.getNumberOfTurns()){
+                    UIDossard("Attention, course déjà terminé !", "orange");
                 }else{
-                    txtDossard.setStyle("-fx-background-color: green");
-                    txtDossard.setText("");
-                    lblInfo.setText("");
-                    txtDossard.requestFocus();
+                    UIDossard("OK", "green");
                 }
             }
-        } catch (Exception e) {
-            lblInfo.setText("Une erreur est survenue !");
-            txtDossard.setText("");
-            txtDossard.setStyle("-fx-background-color: orange");
-            txtDossard.requestFocus();
+            teamFound.addEndTime(timestampUTC);
+            tbListTeamLogData.add(new TeamLog(teamFound.getDossard(), teamFound.getRunner1(), teamFound.getRunner2(), teamFound.getEndTime().size(), courseFound.getNumberOfTurns(), teamFound.getTime(), teamFound.getEndTime().get(teamFound.getEndTime().size() - 1)));
+
+            Race.getInstance().save();
+
+        }catch (Exception e){
+            UIDossard("Une erreur est survenue !", "red");
             e.printStackTrace();
         }
     }
@@ -224,14 +230,14 @@ public class EncodeController extends baseController {
 
     public class TeamLog {
         private int dossard;
-        private String runner1;
-        private String runner2;
+        private Runner runner1;
+        private Runner runner2;
         private int turn;
         private int turnTot;
         private long duration;
         private long endTime;
 
-        public TeamLog(int dossard, String runner1, String runner2, int turn, int turnTot, long duration, long endTime) {
+        public TeamLog(int dossard, Runner runner1, Runner runner2, int turn, int turnTot, long duration, long endTime) {
             this.dossard = dossard;
             this.runner1 = runner1;
             this.runner2 = runner2;
@@ -246,11 +252,17 @@ public class EncodeController extends baseController {
         }
 
         public String getRunner1() {
-            return runner1;
+            if(runner1 ==null){
+                return "";
+            }
+            return runner1.toString();
         }
 
         public String getRunner2() {
-            return runner2;
+            if(runner2 ==null){
+                return "";
+            }
+            return runner2.toString();
         }
 
         public String getTurnStr() {

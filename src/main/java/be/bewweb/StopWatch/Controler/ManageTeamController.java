@@ -10,11 +10,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static be.bewweb.StopWatch.Utils.CheckUI.isNotEmpty;
@@ -46,11 +48,11 @@ public class ManageTeamController extends baseController {
     private TextField txtStartTime;
 
     @FXML
-    private ComboBox cbCourse;
+    private ComboBox<Course> cbCourse;
     @FXML
-    private ComboBox cbSex1;
+    private ComboBox<String> cbSex1;
     @FXML
-    private ComboBox cbSex2;
+    private ComboBox<String> cbSex2;
     @FXML
     private DatePicker dateBorn1;
     @FXML
@@ -73,6 +75,26 @@ public class ManageTeamController extends baseController {
                 } else {
                     onFocusLostTxtDossard();
                 }
+            }
+        });
+        btnClose.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnClose(event);
+            }
+        });
+        btnSaveAndClose.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnSaveAndClose(event);
+            }
+        });
+        btnSaveAndNew.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnSaveAndNew(event);
+            }
+        });
+        chbRegistrationValidated.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+               chbRegistrationValidated.setSelected(!chbRegistrationValidated.isSelected());
             }
         });
 
@@ -124,7 +146,27 @@ public class ManageTeamController extends baseController {
                     team.setStartTime(timestampUTC);
                 }
 
-                Course course = (Course) cbCourse.getSelectionModel().getSelectedItem();
+                Team teamToSupress = null;
+                Course courseToSupress = null;
+                ArrayList<Course> lstCourse = Race.getInstance().getCourses();
+                for (Course course : lstCourse) {
+                    ArrayList<Team> c =course.getTeams();
+                    for (Team t : c) {
+                        if (t.getDossard() == currentTeam.getDossard()) {
+                            teamToSupress = t;
+                            courseToSupress = course;
+                        }
+                    }
+                }
+                Course course = cbCourse.getSelectionModel().getSelectedItem();
+
+                if(courseToSupress != null){
+                    courseToSupress.removeTeam(teamToSupress);
+                    course.addTeam(teamToSupress);
+                }
+
+
+
                 if (currentTeam == null) {
                     course.addTeam(team);
                 }
@@ -147,15 +189,20 @@ public class ManageTeamController extends baseController {
                         currentTeam = team;
                         cbCourse.getSelectionModel().select(course);
                         txtDossard.setText(team.getDossard() + "");
-                        txtName1.setText(team.getRunner1().getName());
-                        txtName2.setText(team.getRunner2().getName());
-                        txtFirstname1.setText(team.getRunner1().getFirstname());
-                        txtFirstname2.setText(team.getRunner2().getFirstname());
-                        cbSex1.getSelectionModel().select(((team.getRunner1().isMan()) ? "Homme" : "Femme"));
-                        cbSex2.getSelectionModel().select(((team.getRunner2().isMan()) ? "Homme" : "Femme"));
 
-                        dateBorn1.setValue(LocalDateTime.ofInstant(team.getRunner1().getBirthDate().toInstant(), ZoneId.systemDefault()).toLocalDate());
-                        dateBorn2.setValue(LocalDateTime.ofInstant(team.getRunner2().getBirthDate().toInstant(), ZoneId.systemDefault()).toLocalDate());
+                        if(team.getRunner1() != null){
+                            txtName1.setText(team.getRunner1().getName());
+                            txtFirstname1.setText(team.getRunner1().getFirstname());
+                            cbSex1.getSelectionModel().select(((team.getRunner1().isMan()) ? "Homme" : "Femme"));
+                            dateBorn1.setValue(LocalDateTime.ofInstant(team.getRunner1().getBirthDate().toInstant(), ZoneId.systemDefault()).toLocalDate());
+                        }
+
+                        if(team.getRunner2() != null){
+                            txtName2.setText(team.getRunner2().getName());
+                            txtFirstname2.setText(team.getRunner2().getFirstname());
+                            cbSex2.getSelectionModel().select(((team.getRunner2().isMan()) ? "Homme" : "Femme"));
+                            dateBorn2.setValue(LocalDateTime.ofInstant(team.getRunner2().getBirthDate().toInstant(), ZoneId.systemDefault()).toLocalDate());
+                        }
                         chbRegistrationValidated.selectedProperty().setValue(team.isRegistrationValidated());
                         try {
                             txtStartTime.setText(convertUTCToLocalTime(getUTCTime(team.getStartTime(), "dd/MM/yyyy HH:mm:ss.SSS"), "dd/MM/yyyy HH:mm:ss.SSS", "dd/MM/yyyy HH:mm:ss"));

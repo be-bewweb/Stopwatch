@@ -65,7 +65,7 @@ public class GenerateRanking {
         int sVeteranA = course.getCategory().getVeteranA();
 
         for (Team team : course.getTeams()) {
-            if (team.getEndTime().size() == course.getNumberOfTurns() && team.isRegistrationValidated()) {
+            if (team.getEndTime().size() >= course.getNumberOfTurns() && team.isRegistrationValidated()) {
                 //mainRanking
                 mainRanking.add(team);
 
@@ -112,21 +112,21 @@ public class GenerateRanking {
                 float avrAge = ((float) team.getRunner1().getAge() + team.getRunner2().getAge()) / ((float) 2);
 
                 //Jeunes : moins de 21 ans
-                if (avrAge < sYoung) {
+                if (avrAge < sYoung && team.getRunner2().isMan() && team.getRunner1().isMan()) {
                     young.add(team);
                 }
 
                 //Seniors : plus ou égal à 21 ans et moins de 40 ans
-                if (avrAge >= sYoung && avrAge < sSenior) {
+                if (avrAge >= sYoung && avrAge < sSenior && team.getRunner2().isMan() && team.getRunner1().isMan()) {
                     senior.add(team);
                 }
 
                 //Vétérans A : plus ou égal à 40 ans et moins de 50 ans
-                if (avrAge >= sSenior && avrAge < sVeteranA) {
+                if (avrAge >= sSenior && avrAge < sVeteranA && team.getRunner2().isMan() && team.getRunner1().isMan()) {
                     veteranA.add(team);
                 }
                 //Vétérans B : plus de 50 ans
-                if (avrAge >= sVeteranA) {
+                if (avrAge >= sVeteranA && team.getRunner2().isMan() && team.getRunner1().isMan()) {
                     veteranB.add(team);
                 }
 
@@ -147,19 +147,19 @@ public class GenerateRanking {
     }
 
     private void sortCategory() {
-        familyA.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
-        familyB.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
-        youngA.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
-        youngB.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
-        youngC.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
-        adult.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
-        young.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
-        senior.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
-        veteranA.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
-        veteranB.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
-        women.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
-        mixed.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
-        mainRanking.sort((o1, o2) -> (int) ((o1.getEndTime().get(o1.getEndTime().size() - 1) - o1.getStartTime()) - (o2.getEndTime().get(o2.getEndTime().size() - 1) - o2.getStartTime())));
+        familyA.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
+        familyB.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
+        youngA.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
+        youngB.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
+        youngC.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
+        adult.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
+        young.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
+        senior.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
+        veteranA.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
+        veteranB.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
+        women.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
+        mixed.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
+        mainRanking.sort((o1, o2) -> (int) ((o1.getEndTime().get(course.getNumberOfTurns() - 1) - o1.getStartTime()) - (o2.getEndTime().get(course.getNumberOfTurns() - 1) - o2.getStartTime())));
     }
 
     private void generateHTMLfile(ArrayList<Team> ranking, String rankingName, String path) throws IOException {
@@ -171,7 +171,7 @@ public class GenerateRanking {
             for (Team team : ranking) {
                 DateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
                 sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-                String time = sdf.format(team.getEndTime().get(team.getEndTime().size() - 1) - team.getStartTime());
+                String time = sdf.format(team.getTime(course.getNumberOfTurns()));
 
                 res += "<tr><td>" + i + "</td><td>" + team.getDossard() + "</td><td>" + team.getRunner1().getName() + "</td><td>" + team.getRunner1().getFirstname() + "</td><td>" + team.getRunner2().getName() + "</td><td>" + team.getRunner2().getFirstname() + "</td><td>" + time + "</td><td>" + team.getType() + "</td></tr>";
                 i++;
@@ -192,7 +192,7 @@ public class GenerateRanking {
             for (Team team : ranking) {
                 DateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
                 sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-                String time = sdf.format(team.getTime());
+                String time = sdf.format(team.getTime(course.getNumberOfTurns()));
                 res += "" + i + ";" + team.getDossard() + ";"+course.getKm()+";" + team.getRunner1().getName() + ";" + team.getRunner1().getFirstname() + ";" + team.getRunner2().getName() + ";" + team.getRunner2().getFirstname() + ";"+course.getCategory().getCategoryOfTeam(team)+";" + team.getType()+ ";" + time + System.getProperty("line.separator");
                 i++;
             }

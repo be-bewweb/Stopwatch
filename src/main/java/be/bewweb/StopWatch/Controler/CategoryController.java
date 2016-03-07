@@ -9,6 +9,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 
 public class CategoryController extends baseController {
 
@@ -93,6 +94,16 @@ public class CategoryController extends baseController {
         sliderVeteranA.valueProperty().addListener((observable, oldValue, newValue) -> onValueChangedSliderVeteranA(newValue));
         btnReset.setOnAction(event -> onClickBtnReset(event));
         btnSave.setOnAction(event -> onClickBtnSave(event));
+        btnReset.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnReset(event);
+            }
+        });
+        btnSave.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnSave(event);
+            }
+        });
     }
 
     @Override

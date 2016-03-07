@@ -24,6 +24,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
@@ -83,6 +84,36 @@ public class homeController extends baseController {
                         onClickBtnShow(mouseEvent);
                     }
                 }
+            }
+        });
+        tbListTeam.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.DELETE) {
+                onClickBtnRemove(event);
+            }
+        });
+        btnShow.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnShow(event);
+            }
+        });
+        btnAdd.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnAdd(event);
+            }
+        });
+        btnEncode.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnEncode(event);
+            }
+        });
+        btnRemove.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnRemove(event);
+            }
+        });
+        btnShowRanking.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnShowRanking(event);
             }
         });
 

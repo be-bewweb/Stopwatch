@@ -72,21 +72,35 @@ public class Category {
             //Un classement général avec mention des catégories (moyenne d?âge des deux équipiers).
             float avrAge = ((float) team.getRunner1().getAge() + team.getRunner2().getAge()) / ((float) 2);
             //Jeunes : moins de 21 ans
-            if (avrAge < this.young) {
+            if (avrAge < this.young && team.getRunner2().isMan() && team.getRunner1().isMan()) {
                 return "Jeune";
             }
             //Seniors : plus ou égal à 21 ans et moins de 40 ans
-            if (avrAge >= this.young && avrAge < this.senior) {
+            if (avrAge >= this.young && avrAge < this.senior && team.getRunner2().isMan() && team.getRunner1().isMan()) {
                 return "Senior";
             }
             //Vétérans A : plus ou égal à 40 ans et moins de 50 ans
-            if (avrAge >= this.senior && avrAge < this.veteranA) {
+            if (avrAge >= this.senior && avrAge < this.veteranA && team.getRunner2().isMan() && team.getRunner1().isMan()) {
                 return "Vétéran A";
             }
             //Vétérans B : plus de 50 ans
-            if (avrAge >= this.veteranA) {
+            if (avrAge >= this.veteranA && team.getRunner2().isMan() && team.getRunner1().isMan()) {
                 return "Vétéran B";
             }
+
+            //Dame
+            if (!team.getRunner1().isMan() && !team.getRunner2().isMan()) {
+                return "Dame";
+            }
+
+            //Mixte
+            if (!team.getRunner1().isMan() && team.getRunner2().isMan()) {
+                return "Mixte";
+            }
+            if (team.getRunner1().isMan() && !team.getRunner2().isMan()) {
+                return "Mixte";
+            }
+
         }else{
             //Familles A : A moins de 12 ans - B plus de 16 ans.
             if (team.getRunner1().getAge() < this.child && team.getRunner2().getAge() > this.adult) {

@@ -1,6 +1,7 @@
 package be.bewweb.StopWatch.Controler;
 
 import be.bewweb.StopWatch.Modele.Course;
+import be.bewweb.StopWatch.Modele.Listener.CourseListener;
 import be.bewweb.StopWatch.Modele.Listener.TeamListener;
 import be.bewweb.StopWatch.Modele.Race;
 import be.bewweb.StopWatch.Modele.Runner;
@@ -87,8 +88,8 @@ public class RankingController extends baseController {
         for (Course course : Race.getInstance().getCourses()) {
             ArrayList<Ranking> rankings = new ArrayList<>();
             for (Team team : course.getTeams()) {
-                if (course.getNumberOfTurns() == team.getEndTime().size() && team.isRegistrationValidated()) {
-                    Ranking ranking = new Ranking(team.getDossard(), team.getRunner1(), team.getRunner2(), team.getStartTime(), team.getEndTime().get(team.getEndTime().size() - 1), course);
+                if (course.getNumberOfTurns() <= team.getEndTime().size() && team.getEndTime().size() > 0 && team.isRegistrationValidated()) {
+                    Ranking ranking = new Ranking(team.getDossard(), team.getRunner1(), team.getRunner2(), team.getStartTime(), team.getEndTime().get(course.getNumberOfTurns() - 1), course);
                     tbRankingData.add(ranking);
                     rankings.add(ranking);
                 }
@@ -106,40 +107,66 @@ public class RankingController extends baseController {
 
     }
 
+    private void teamListener(Team team){
+        team.addListener(new TeamListener() {
+            @Override
+            public void dossardChanged(int dossard) {
+                initTableViewValue();
+            }
+
+            @Override
+            public void startTimeChanged(long start) {
+                initTableViewValue();
+            }
+
+            @Override
+            public void endTimeChanged(ArrayList<Long> end) {
+                initTableViewValue();
+            }
+
+            @Override
+            public void runner1Changed(Runner runner) {
+                initTableViewValue();
+            }
+
+            @Override
+            public void runner2Changed(Runner runner) {
+                initTableViewValue();
+            }
+
+            @Override
+            public void registrationValidatedChanged(Boolean registrationValidated) {
+                initTableViewValue();
+            }
+        });
+    }
+
     private void initAllTeamsListener() {
         for (Course course : Race.getInstance().getCourses()) {
+            course.addListener(new CourseListener() {
+                @Override
+                public void nameChanged(String name) {
+
+                }
+
+                @Override
+                public void kmChanged(float km) {
+
+                }
+
+                @Override
+                public void teamAdded(Team team) {
+                    teamListener(team);
+                    initTableViewValue();
+                }
+
+                @Override
+                public void teamRemoved(Team team) {
+
+                }
+            });
             for (Team team : course.getTeams()) {
-                team.addListener(new TeamListener() {
-                    @Override
-                    public void dossardChanged(int dossard) {
-                        initTableViewValue();
-                    }
-
-                    @Override
-                    public void startTimeChanged(long start) {
-                        initTableViewValue();
-                    }
-
-                    @Override
-                    public void endTimeChanged(ArrayList<Long> end) {
-                        initTableViewValue();
-                    }
-
-                    @Override
-                    public void runner1Changed(Runner runner) {
-                        initTableViewValue();
-                    }
-
-                    @Override
-                    public void runner2Changed(Runner runner) {
-                        initTableViewValue();
-                    }
-
-                    @Override
-                    public void registrationValidatedChanged(Boolean registrationValidated) {
-                        initTableViewValue();
-                    }
-                });
+                teamListener(team);
             }
         }
 

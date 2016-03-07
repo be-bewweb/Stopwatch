@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
@@ -67,7 +68,26 @@ public class ParametersRaceController extends baseController {
                 }
             }
         });
-
+        btnCreateCourse.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnCreateCourse(event);
+            }
+        });
+        btnChooseFile.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnChooseFile(event);
+            }
+        });
+        btnCreateRace.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnCreateRace(event);
+            }
+        });
+        btnRemoveCourse.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onClickBtnRemoveCourse(event);
+            }
+        });
 
         txtNameOfRace.setText(Race.getInstance().getName());
         txtPathToRace.setText(Race.getInstance().getPath());
