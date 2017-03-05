@@ -93,6 +93,22 @@ public class Category {
         this.master = master;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Course getCourse() {
+        return course;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
     public String getCategoryOfTeam(Team team) {
         if (isMaster()) {
             //Un classement général avec mention des catégories (moyenne d?âge des deux équipiers).

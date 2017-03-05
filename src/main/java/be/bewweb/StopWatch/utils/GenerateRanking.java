@@ -69,45 +69,44 @@ public class GenerateRanking {
                 //mainRanking
                 mainRanking.add(team);
 
-                //Familles A : A moins de 12 ans - B plus de 16 ans.
-                if (team.getRunner1().getAge() < sChild && team.getRunner2().getAge() > sAdult) {
+                //Familles A : A [0;12] et B ]16;+[.
+                if (team.getRunner1().getAge() <= sChild && team.getRunner2().getAge() > sAdult) {
                     familyA.add(team);
                 }
-                if (team.getRunner2().getAge() < sChild && team.getRunner1().getAge() > sAdult) {
+                if (team.getRunner2().getAge() <= sChild && team.getRunner1().getAge() > sAdult) {
                     familyA.add(team);
                 }
 
-                //Familles B : A entre 12 et 16 ans - B plus de 16 ans.
-                if (team.getRunner1().getAge() >= sChild && team.getRunner1().getAge() <= sAdult && team.getRunner2().getAge() > sAdult) {
+                //Familles B : A ]12;16] et B ]16;+[.
+                if (team.getRunner1().getAge() > sChild && team.getRunner1().getAge() <= sAdult && team.getRunner2().getAge() > sAdult) {
                     familyB.add(team);
                 }
-                if (team.getRunner2().getAge() >= sChild && team.getRunner2().getAge() <= sAdult && team.getRunner1().getAge() > sAdult) {
+                if (team.getRunner2().getAge() > sChild && team.getRunner2().getAge() <= sAdult && team.getRunner1().getAge() > sAdult) {
                     familyB.add(team);
                 }
 
-                //Jeunes A : A et B moins de 12 ans.
-                if (team.getRunner1().getAge() < sChild && team.getRunner2().getAge() < sChild) {
+                //Jeunes A : A et B [0;12].
+                if (team.getRunner1().getAge() <= sChild && team.getRunner2().getAge() <= sChild) {
                     youngA.add(team);
                 }
 
-                //Jeunes B : A moins de 12 - B entre 12 et 16 ans.
-                if (team.getRunner1().getAge() >= sChild && team.getRunner1().getAge() <= sAdult && team.getRunner2().getAge() < sChild) {
+                //Jeunes B : A [0;12] - B ]12;16].
+                if (team.getRunner1().getAge() > sChild && team.getRunner1().getAge() <= sAdult && team.getRunner2().getAge() <= sChild) {
                     youngB.add(team);
                 }
-                if (team.getRunner2().getAge() >= sChild && team.getRunner2().getAge() <= sAdult && team.getRunner1().getAge() < sChild) {
+                if (team.getRunner2().getAge() > sChild && team.getRunner2().getAge() <= sAdult && team.getRunner1().getAge() <= sChild) {
                     youngB.add(team);
                 }
 
-                //Jeunes C : A et B entre 12 et 16 ans.
-                if (team.getRunner1().getAge() >= sChild && team.getRunner1().getAge() <= sAdult && team.getRunner2().getAge() >= sChild && team.getRunner2().getAge() <= sAdult) {
+                //Jeunes C : A et B ]12;16].
+                if (team.getRunner1().getAge() > sChild && team.getRunner1().getAge() <= sAdult && team.getRunner2().getAge() > sChild && team.getRunner2().getAge() <= sAdult) {
                     youngC.add(team);
                 }
 
-                //Adultes : les équipes dont les 2 ont plus de 16 ans seront reprises dans un classement à part et seront récompensées.
+                //Adultes : A et B ]16;+[.
                 if (team.getRunner1().getAge() > sAdult && team.getRunner2().getAge() > sAdult) {
                     adult.add(team);
                 }
-
                 //Un classement général avec mention des catégories (moyenne d?âge des deux équipiers).
                 float avrAge = ((float) team.getRunner1().getAge() + team.getRunner2().getAge()) / ((float) 2);
 
@@ -223,28 +222,30 @@ public class GenerateRanking {
 
             InputStream ddlStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("bootstrap.min.css");
 
-            try (FileOutputStream fos = new FileOutputStream(completPath + "bootstrap.min.css")) {
+            try (FileOutputStream fos = new FileOutputStream(completPath + "0-bootstrap.min.css")) {
                 byte[] buf = new byte[2048];
                 int r;
                 while (-1 != (r = ddlStream.read(buf))) {
                     fos.write(buf, 0, r);
                 }
             }
-
-            generateHTMLfile(familyA, "Famille A", completPath + "familyA.html");
-            generateHTMLfile(familyB, "Famille B", completPath + "familyb.html");
-            generateHTMLfile(youngA, "Jeune A", completPath + "youngA.html");
-            generateHTMLfile(youngB, "Jeune B", completPath + "youngB.html");
-            generateHTMLfile(youngC, "Jeune C", completPath + "youngC.html");
-            generateHTMLfile(adult, "Adulte", completPath + "adult.html");
-            generateHTMLfile(young, "Jeune", completPath + "young-master.html");
-            generateHTMLfile(senior, "Senior", completPath + "senior-master.html");
-            generateHTMLfile(veteranA, "Vétéran A", completPath + "veteranA-master.html");
-            generateHTMLfile(veteranB, "Vétéran B", completPath + "veteranB-master.html");
-            generateHTMLfile(women, "Fille", completPath + "women-master.html");
-            generateHTMLfile(mixed, "Mixte", completPath + "mixed-master.html");
-            generateHTMLfile(mainRanking, "Classement général", completPath + "general.html");
-            generateCSVfile(mainRanking, "Classement général", completPath + "general.csv");
+            if (!course.getCategory().isMaster()) {
+                generateHTMLfile(familyA, "Famille A", completPath + "1-familyA.html");
+                generateHTMLfile(familyB, "Famille B", completPath + "2-familyb.html");
+                generateHTMLfile(youngA, "Jeune A", completPath + "3-youngA.html");
+                generateHTMLfile(youngB, "Jeune B", completPath + "4-youngB.html");
+                generateHTMLfile(youngC, "Jeune C", completPath + "5-youngC.html");
+                generateHTMLfile(adult, "Adulte", completPath + "6-adult.html");
+            } else {
+                generateHTMLfile(young, "Jeune", completPath + "1-young-master.html");
+                generateHTMLfile(senior, "Senior", completPath + "2-senior-master.html");
+                generateHTMLfile(veteranA, "Vétéran A", completPath + "3-veteranA-master.html");
+                generateHTMLfile(veteranB, "Vétéran B", completPath + "4-veteranB-master.html");
+                generateHTMLfile(women, "Fille", completPath + "5-women-master.html");
+                generateHTMLfile(mixed, "Mixte", completPath + "6-mixed-master.html");
+            }
+            generateHTMLfile(mainRanking, "7-Classement général", completPath + "general.html");
+            generateCSVfile(mainRanking, "8-Classement général", completPath + "general.csv");
         } catch (IOException e) {
             e.printStackTrace();
             return false;

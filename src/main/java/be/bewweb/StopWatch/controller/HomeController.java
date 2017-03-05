@@ -7,15 +7,14 @@ import be.bewweb.StopWatch.exception.DatabaseException;
 import be.bewweb.StopWatch.utils.GenerateRanking;
 import be.bewweb.StopWatch.view.*;
 import be.bewweb.StopWatch.dao.persistence.Repository.Repository;
-import be.bewweb.StopWatch.dao.persistence.Repository.TeamRepository;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -25,7 +24,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -48,7 +46,7 @@ public class HomeController extends BaseController {
     private Button btnShowRanking;
 
     @FXML
-    private TableView tbListTeam;
+    private TableView<Team> tbListTeam;
     private ObservableList<Team> tbListTeamData;
     @FXML
     private MenuItem menuItemModifyRace;
@@ -63,37 +61,32 @@ public class HomeController extends BaseController {
     private Race race;
 
     private static Timer refreshRaceTimer;
-    private static ChangeListener refreshRaceListener;
+    private static ChangeListener<Boolean> refreshRaceListener;
 
     private List<DetailsCourseController> detailsCourseControllers = new ArrayList<>();
 
-    private TeamRepository teamRepository;
     private Repository<Race> raceRepository;
 
     @Override
     public void initialized() {
         super.initialized();
 
-        teamRepository = new TeamRepository();
         raceRepository = new Repository<>(Race.class);
 
         this.race = (Race) getStage().getUserData();
 
         //Event
-        btnAdd.setOnAction(event -> onClickBtnAdd(event));
-        btnRemove.setOnAction(event -> onClickBtnRemove(event));
-        btnShow.setOnAction(event -> onClickBtnShow(event));
-        btnEncode.setOnAction(event -> onClickBtnEncode(event));
-        btnShowRanking.setOnAction(event -> onClickBtnShowRanking(event));
-        menuItemModifyRace.setOnAction(event -> onClickMenuItemModifyRace(event));
-        menuItemGenerateAllRanking.setOnAction(event -> onClickMenuItemGenerateAllRanking(event));
-        tbListTeam.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                    if (mouseEvent.getClickCount() == 2) {
-                        onClickBtnShow(mouseEvent);
-                    }
+        btnAdd.setOnAction(this::onClickBtnAdd);
+        btnRemove.setOnAction(this::onClickBtnRemove);
+        btnShow.setOnAction(this::onClickBtnShow);
+        btnEncode.setOnAction(this::onClickBtnEncode);
+        btnShowRanking.setOnAction(this::onClickBtnShowRanking);
+        menuItemModifyRace.setOnAction(this::onClickMenuItemModifyRace);
+        menuItemGenerateAllRanking.setOnAction(this::onClickMenuItemGenerateAllRanking);
+        tbListTeam.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                if (mouseEvent.getClickCount() == 2) {
+                    onClickBtnShow(mouseEvent);
                 }
             }
         });
@@ -134,67 +127,57 @@ public class HomeController extends BaseController {
 
     }
 
-    private void startAutoRefresh(){
+    private void startAutoRefresh() {
         refreshRaceTimer = new Timer();
         refreshRaceTimer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 try {
                     race = raceRepository.find(race.getId());
 
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            lblNameRace.setText(race.getName());
-                            refreshListTeam();
-                            refreshDetailsCourses();
-                        }
+                    Platform.runLater(() -> {
+                        lblNameRace.setText(race.getName());
+                        refreshListTeam();
+                        refreshDetailsCourses();
                     });
 
                 } catch (DatabaseException e) {
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            Alert alert = new Alert(Alert.AlertType.WARNING);
-                            alert.setTitle("Problème avec la base de données");
-                            alert.setHeaderText("Une erreur est survenue lors de l'accès à la base de données");
-                            alert.setContentText("Impossible de réfraichir la liste des équipes pour le moment.");
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Problème avec la base de données");
+                        alert.setHeaderText("Une erreur est survenue lors de l'accès à la base de données");
+                        alert.setContentText("Impossible de réfraichir la liste des équipes pour le moment.");
 
-                            ButtonType refresh = new ButtonType("Réessayer", ButtonBar.ButtonData.OK_DONE);
+                        ButtonType refresh = new ButtonType("Réessayer", ButtonBar.ButtonData.OK_DONE);
 
-                            alert.getButtonTypes().setAll(refresh);
-                            Optional<ButtonType> result = alert.showAndWait();
+                        alert.getButtonTypes().setAll(refresh);
+                        Optional<ButtonType> result = alert.showAndWait();
 
 
-                            if (result.get() == refresh) {
-                                stopAutoRefresh();
-                                startAutoRefresh();
-                            }
+                        if (result.get() == refresh) {
+                            stopAutoRefresh();
+                            startAutoRefresh();
                         }
                     });
                 }
             }
         }, 0, 5000);
-        if(refreshRaceListener != null){
+        if (refreshRaceListener != null) {
             getStage().focusedProperty().removeListener(refreshRaceListener);
             refreshRaceListener = null;
         }
 
-        refreshRaceListener = new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
-                System.out.printf(refreshRaceTimer.toString() + System.lineSeparator());
-                pauseAutoRefresh();
-                if (ov.getValue()) {
-                    //focused
-                    startAutoRefresh();
-                }
+        refreshRaceListener = (ov, t, t1) -> {
+            System.out.printf(refreshRaceTimer.toString() + System.lineSeparator());
+            pauseAutoRefresh();
+            if (ov.getValue()) {
+                //focused
+                startAutoRefresh();
             }
         };
 
         getStage().focusedProperty().addListener(refreshRaceListener);
 
     }
-
 
     private synchronized void stopAutoRefresh() {
         getStage().focusedProperty().removeListener(refreshRaceListener);
@@ -208,7 +191,7 @@ public class HomeController extends BaseController {
         refreshRaceTimer.purge();
     }
 
-    public void refreshListTeam() {
+    private void refreshListTeam() {
         if (tbListTeamData == null) {
             tbListTeamData = FXCollections.observableArrayList();
             tbListTeam.setItems(tbListTeamData);
@@ -229,36 +212,44 @@ public class HomeController extends BaseController {
     }
 
     private void initTableView() {
-        TableColumn dossardCol = new TableColumn("Dos");
-        dossardCol.setCellValueFactory(new PropertyValueFactory<Team, String>("bib"));
-        dossardCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(7));
+        TableColumn<Team, String> dossardCol = new TableColumn<>("Dos");
+        dossardCol.setCellValueFactory(new PropertyValueFactory<>("bib"));
+        dossardCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(8));
         dossardCol.setSortType(TableColumn.SortType.ASCENDING);
 
-        TableColumn runner1Col = new TableColumn("Runner 1");
-        runner1Col.setCellValueFactory(new PropertyValueFactory<Team, String>("runner1"));
-        runner1Col.prefWidthProperty().bind(tbListTeam.widthProperty().divide(7));
+        TableColumn<Team, String> runner1Col = new TableColumn<>("Runner 1");
+        runner1Col.setCellValueFactory(new PropertyValueFactory<>("runner1"));
+        runner1Col.prefWidthProperty().bind(tbListTeam.widthProperty().divide(8));
 
-        TableColumn runner2Col = new TableColumn("Runner 2");
-        runner2Col.setCellValueFactory(new PropertyValueFactory<Team, String>("runner2"));
-        runner2Col.prefWidthProperty().bind(tbListTeam.widthProperty().divide(7));
+        TableColumn<Team, String> runner1AgeCol = new TableColumn<>("Age 1");
+        runner1AgeCol.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getRunner1().getAge() + " ans"));
+        runner1AgeCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(8).divide(2));
 
-        TableColumn registrationValidatedCol = new TableColumn("Inscription validé");
-        registrationValidatedCol.setCellValueFactory(new PropertyValueFactory<Team, String>("registrationValidated"));
-        registrationValidatedCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(7));
+        TableColumn<Team, String> runner2Col = new TableColumn<>("Runner 2");
+        runner2Col.setCellValueFactory(new PropertyValueFactory<>("runner2"));
+        runner2Col.prefWidthProperty().bind(tbListTeam.widthProperty().divide(8));
 
-        TableColumn typeCol = new TableColumn("Type");
-        typeCol.setCellValueFactory(new PropertyValueFactory<Team, String>("type"));
-        typeCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(7));
+        TableColumn<Team, String> runner2AgeCol = new TableColumn<>("Age 2");
+        runner2AgeCol.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getRunner2().getAge() + " ans"));
+        runner2AgeCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(8).divide(2));
 
-        TableColumn arrivedCol = new TableColumn("Arrivé");
-        arrivedCol.setCellValueFactory(new PropertyValueFactory<Team, String>("arrived"));
-        arrivedCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(7));
+        TableColumn<Team, String> registrationValidatedCol = new TableColumn<>("Inscription validé");
+        registrationValidatedCol.setCellValueFactory(new PropertyValueFactory<>("registrationValidated"));
+        registrationValidatedCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(8));
 
-        TableColumn courseCol = new TableColumn("Course");
-        courseCol.setCellValueFactory(new PropertyValueFactory<Team, String>("course"));
-        courseCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(7));
+        TableColumn<Team, String> typeCol = new TableColumn<>("Type");
+        typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
+        typeCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(8));
 
-        tbListTeam.getColumns().addAll(dossardCol, runner1Col, runner2Col, registrationValidatedCol, typeCol, arrivedCol, courseCol);
+        TableColumn<Team, String> arrivedCol = new TableColumn<>("Arrivé");
+        arrivedCol.setCellValueFactory(new PropertyValueFactory<>("arrived"));
+        arrivedCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(8));
+
+        TableColumn<Team, String> courseCol = new TableColumn<>("Course");
+        courseCol.setCellValueFactory(new PropertyValueFactory<>("course"));
+        courseCol.prefWidthProperty().bind(tbListTeam.widthProperty().divide(8));
+
+        tbListTeam.getColumns().addAll(dossardCol, runner1Col, runner1AgeCol, runner2Col, runner2AgeCol, registrationValidatedCol, typeCol, arrivedCol, courseCol);
     }
 
     private void refreshDetailsCourses() {
@@ -298,7 +289,7 @@ public class HomeController extends BaseController {
 
     private void onClickBtnRemove(Event event) {
         stopAutoRefresh();
-        Team team = (Team) tbListTeam.getSelectionModel().getSelectedItem();
+        Team team = tbListTeam.getSelectionModel().getSelectedItem();
         if (team != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation");
@@ -339,7 +330,6 @@ public class HomeController extends BaseController {
             }
         }
     }
-
 
     private void onClickBtnShow(Event event) {
         try {
@@ -402,6 +392,4 @@ public class HomeController extends BaseController {
             // ... user chose CANCEL or closed the dialog
         }
     }
-
-
 }

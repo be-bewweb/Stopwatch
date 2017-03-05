@@ -39,6 +39,20 @@ public class Repository<T> {
             session.close();
         }
     }
+    public void save(T obj) throws DatabaseException {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            session.save(obj);
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction != null) transaction.rollback();
+            throw new DatabaseException(e.getMessage());
+        } finally {
+            session.close();
+        }
+    }
 
     public T find(Long id) throws DatabaseException {
         Session session = sessionFactory.openSession();

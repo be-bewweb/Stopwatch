@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="765.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.bewweb.StopWatch.controller.CategoryController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="765.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.bewweb.StopWatch.controller.CategoryController">
     <children>
         <VBox prefHeight="765.0" prefWidth="600.0">
             <children>
@@ -70,7 +70,7 @@
             <children>
                 <Label prefHeight="86.0" prefWidth="75.0" text="Enfant" />
                 <Slider fx:id="sliderChild" prefHeight="90.0" prefWidth="454.0" value="12.0" />
-                <Label fx:id="lblIntervalChild" alignment="CENTER" contentDisplay="CENTER" prefHeight="94.0" prefWidth="76.0" text="[0 - 12[" />
+                <Label fx:id="lblIntervalChild" alignment="CENTER" contentDisplay="CENTER" prefHeight="94.0" prefWidth="76.0" text="[0 - 12]" />
             </children>
         </HBox>
         <HBox layoutX="10.0" layoutY="251.0" prefHeight="50.0" prefWidth="580.0">
@@ -92,6 +92,7 @@
                                     </font>
                                 </Label>
                                 <Label text="Familles A" />
+                                <Label fx:id="lblSetFamilyA" text="[..:..]" />
                             </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" layoutX="250.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
@@ -102,6 +103,7 @@
                                     </font>
                                 </Label>
                                 <Label text="Familles B" />
+                                <Label fx:id="lblSetFamilyB" text="[..:..]" />
                             </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" layoutX="200.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
@@ -112,6 +114,7 @@
                                     </font>
                                 </Label>
                                 <Label text="Jeunes A" />
+                                <Label fx:id="lblSetYoungA" text="[..:..]" />
                             </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" layoutX="300.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
@@ -122,6 +125,7 @@
                                     </font>
                                 </Label>
                                 <Label text="Jeunes B" />
+                                <Label fx:id="lblSetYoungB" text="[..:..]" />
                             </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" layoutX="300.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
@@ -132,6 +136,7 @@
                                     </font>
                                 </Label>
                                 <Label text="Jeunes C" />
+                                <Label fx:id="lblSetYoungC" text="[..:..]" />
                             </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" layoutX="400.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
@@ -142,6 +147,7 @@
                                     </font>
                                 </Label>
                                 <Label text="Adultes" />
+                                <Label fx:id="lblSetAdult" text="[..:..]" />
                             </children>
                         </VBox>
                     </children>
@@ -202,6 +208,7 @@
                                     </font>
                                 </Label>
                                 <Label text="Jeunes" />
+                                <Label fx:id="lblSetYoung" text="[..:..]" />
                             </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" layoutX="250.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
@@ -212,6 +219,8 @@
                                     </font>
                                 </Label>
                                 <Label text="Seniors" />
+                                <Label fx:id="lblSetSenior" text="[..:..]" />
+
                             </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" layoutX="200.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
@@ -222,6 +231,8 @@
                                     </font>
                                 </Label>
                                 <Label text="Vétérans A" />
+                                <Label fx:id="lblSetVeteranA" text="[..:..]" />
+
                             </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" layoutX="300.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
@@ -232,6 +243,8 @@
                                     </font>
                                 </Label>
                                 <Label text="Vétérans B" />
+                                <Label fx:id="lblSetVeteranB" text="[..:..]" />
+
                             </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" layoutX="300.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
@@ -242,6 +255,7 @@
                                     </font>
                                 </Label>
                                 <Label text="Dames" />
+                                <Label fx:id="lblSetWomen" text="[..:..]" />
                             </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" layoutX="400.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
@@ -252,6 +266,7 @@
                                     </font>
                                 </Label>
                                 <Label text="Mixtes" />
+                                <Label fx:id="lblSetMixed" text="[..:..]" />
                             </children>
                         </VBox>
                     </children>

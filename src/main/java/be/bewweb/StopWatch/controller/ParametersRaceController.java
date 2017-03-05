@@ -185,7 +185,11 @@ public class ParametersRaceController extends BaseController {
 
     private void updateCurrentRace(){
         try {
-            raceRepository.merge(currentRace);
+            if(currentRace.getId() == null){
+                raceRepository.save(currentRace);
+            }else{
+                raceRepository.merge(currentRace);
+            }
         } catch (DatabaseException e) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Problème avec la base de données");

@@ -62,6 +62,32 @@ public class CategoryController extends BaseController {
     @FXML
     private Label lblNumberMixed;
 
+    @FXML
+    private Label lblSetFamilyA;
+    @FXML
+    private Label lblSetFamilyB;
+    @FXML
+    private Label lblSetYoungA;
+    @FXML
+    private Label lblSetYoungB;
+    @FXML
+    private Label lblSetYoungC;
+    @FXML
+    private Label lblSetAdult;
+
+    @FXML
+    private Label lblSetYoung;
+    @FXML
+    private Label lblSetSenior;
+    @FXML
+    private Label lblSetVeteranA;
+    @FXML
+    private Label lblSetVeteranB;
+    @FXML
+    private Label lblSetWomen;
+    @FXML
+    private Label lblSetMixed;
+
 
     @FXML
     private Slider sliderAdult;
@@ -95,6 +121,7 @@ public class CategoryController extends BaseController {
         sliderYoung.valueProperty().addListener((observable, oldValue, newValue) -> onValueChangedSliderYoung(newValue));
         sliderSenior.valueProperty().addListener((observable, oldValue, newValue) -> onValueChangedSliderSenior(newValue));
         sliderVeteranA.valueProperty().addListener((observable, oldValue, newValue) -> onValueChangedSliderVeteranA(newValue));
+
         btnReset.setOnAction(event -> onClickBtnReset(event));
         btnSave.setOnAction(event -> onClickBtnSave(event));
         btnReset.setOnKeyPressed(event -> {
@@ -114,12 +141,12 @@ public class CategoryController extends BaseController {
 
         courseRepository = new Repository<>(Course.class);
 
-
         currentCourse = (Course) getStage().getUserData();
 
         lblNameCourse.setText(currentCourse.toString());
         initCategory();
         updateNumberOfTeamsPerCategory();
+        updateSetCategory();
 
         txtCourseKm.setText(currentCourse.getKm() + "");
         txtCourseName.setText(currentCourse.getName());
@@ -176,41 +203,41 @@ public class CategoryController extends BaseController {
         for (Team team : currentCourse.getTeams()) {
             if (team.getRunner1() != null && team.getRunner1() != null) {
 
-                //Familles A : A moins de 12 ans - B plus de 16 ans.
-                if (team.getRunner1().getAge() < sChild && team.getRunner2().getAge() > sAdult) {
+                //Familles A : A [0;12] et B ]16;+[.
+                if (team.getRunner1().getAge() <= sChild && team.getRunner2().getAge() > sAdult) {
                     familyA++;
                 }
-                if (team.getRunner2().getAge() < sChild && team.getRunner1().getAge() > sAdult) {
+                if (team.getRunner2().getAge() <= sChild && team.getRunner1().getAge() > sAdult) {
                     familyA++;
                 }
 
-                //Familles B : A entre 12 et 16 ans - B plus de 16 ans.
-                if (team.getRunner1().getAge() >= sChild && team.getRunner1().getAge() <= sAdult && team.getRunner2().getAge() > sAdult) {
+                //Familles B : A ]12;16] et B ]16;+[.
+                if (team.getRunner1().getAge() > sChild && team.getRunner1().getAge() <= sAdult && team.getRunner2().getAge() > sAdult) {
                     familyB++;
                 }
-                if (team.getRunner2().getAge() >= sChild && team.getRunner2().getAge() <= sAdult && team.getRunner1().getAge() > sAdult) {
+                if (team.getRunner2().getAge() > sChild && team.getRunner2().getAge() <= sAdult && team.getRunner1().getAge() > sAdult) {
                     familyB++;
                 }
 
-                //Jeunes A : A et B moins de 12 ans.
-                if (team.getRunner1().getAge() < sChild && team.getRunner2().getAge() < sChild) {
+                //Jeunes A : A et B [0;12].
+                if (team.getRunner1().getAge() <= sChild && team.getRunner2().getAge() <= sChild) {
                     youngA++;
                 }
 
-                //Jeunes B : A moins de 12 - B entre 12 et 16 ans.
-                if (team.getRunner1().getAge() >= sChild && team.getRunner1().getAge() <= sAdult && team.getRunner2().getAge() < sChild) {
+                //Jeunes B : A [0;12] - B ]12;16].
+                if (team.getRunner1().getAge() > sChild && team.getRunner1().getAge() <= sAdult && team.getRunner2().getAge() <= sChild) {
                     youngB++;
                 }
-                if (team.getRunner2().getAge() >= sChild && team.getRunner2().getAge() <= sAdult && team.getRunner1().getAge() < sChild) {
+                if (team.getRunner2().getAge() > sChild && team.getRunner2().getAge() <= sAdult && team.getRunner1().getAge() <= sChild) {
                     youngB++;
                 }
 
-                //Jeunes C : A et B entre 12 et 16 ans.
-                if (team.getRunner1().getAge() >= sChild && team.getRunner1().getAge() <= sAdult && team.getRunner2().getAge() >= sChild && team.getRunner2().getAge() <= sAdult) {
+                //Jeunes C : A et B ]12;16].
+                if (team.getRunner1().getAge() > sChild && team.getRunner1().getAge() <= sAdult && team.getRunner2().getAge() > sChild && team.getRunner2().getAge() <= sAdult) {
                     youngC++;
                 }
 
-                //Adultes : les équipes dont les 2 ont plus de 16 ans seront reprises dans un classement à part et seront récompensées.
+                //Adultes : A et B ]16;+[.
                 if (team.getRunner1().getAge() > sAdult && team.getRunner2().getAge() > sAdult) {
                     adult++;
                 }
@@ -265,6 +292,31 @@ public class CategoryController extends BaseController {
         lblNumberVeteranB.setText(formatInteger(veteranB));
         lblNumberWomen.setText(formatInteger(women));
         lblNumberMixed.setText(formatInteger(mixed));
+
+    }
+
+    private void updateSetCategory() {
+        int sAdult = (int) sliderAdult.getValue();
+        int sChild = (int) sliderChild.getValue();
+
+        int sYoung = (int) sliderYoung.getValue();
+        int sSenior = (int) sliderSenior.getValue();
+        int sVeteranA = (int) sliderVeteranA.getValue();
+
+
+        lblSetFamilyA.setText("[0;" + sChild + "] et ]" + sAdult + ";+[");
+        lblSetFamilyB.setText("[" + sChild + ";" + sAdult + "] et ]" + sAdult + ";+[");
+        lblSetYoungA.setText("[0;" + sChild + "] et [0;" + sChild + "]");
+        lblSetYoungB.setText("[0;" + sChild + "] et ]" + sChild + ";" + sAdult + "]");
+        lblSetYoungC.setText("]" + sChild + ";" + sAdult + "] et ]" + sChild + ";" + sAdult + "]");
+        lblSetAdult.setText("]" + sAdult + ";+[ et ]" + sAdult + ";+[");
+
+        lblSetYoung.setText("AVR < " + sYoung);
+        lblSetSenior.setText(sYoung + " ≤ AVR < " + sSenior);
+        lblSetVeteranA.setText(sSenior + " ≤ AVR < " + sVeteranA);
+        lblSetVeteranB.setText(sVeteranA + " ≤ AVR");
+        lblSetWomen.setText("F/F");
+        lblSetMixed.setText("F/H");
 
     }
 
@@ -347,6 +399,7 @@ public class CategoryController extends BaseController {
         sliderAdult.setValue(newValue);
         lblIntervalAdult.setText("]" + newValue + " -  ]");
         updateNumberOfTeamsPerCategory();
+        updateSetCategory();
     }
 
     private void onValueChangedSliderChild(Number value) {
@@ -357,6 +410,7 @@ public class CategoryController extends BaseController {
         sliderChild.setValue(newValue);
         lblIntervalChild.setText("[0 - " + newValue + "[");
         updateNumberOfTeamsPerCategory();
+        updateSetCategory();
     }
 
     private void onValueChangedSliderYoung(Number value) {
@@ -368,6 +422,7 @@ public class CategoryController extends BaseController {
         lblIntervalYoung.setText("[0 - " + newValue + "[");
         lblIntervalSenior.setText("[" + newValue + " - " + (int) sliderSenior.getValue() + "[");
         updateNumberOfTeamsPerCategory();
+        updateSetCategory();
     }
 
     private void onValueChangedSliderSenior(Number value) {
@@ -382,6 +437,7 @@ public class CategoryController extends BaseController {
         lblIntervalSenior.setText("[" + (int) sliderYoung.getValue() + " - " + newValue + "[");
         lblIntervalVeteranA.setText("[" + newValue + " - " + (int) sliderVeteranA.getValue() + "[");
         updateNumberOfTeamsPerCategory();
+        updateSetCategory();
     }
 
     private void onValueChangedSliderVeteranA(Number value) {
@@ -393,6 +449,7 @@ public class CategoryController extends BaseController {
         lblIntervalVeteranA.setText("[" + (int) sliderSenior.getValue() + " - " + newValue + "[");
         lblIntervalVeteranB.setText("[" + newValue + " -  ]");
         updateNumberOfTeamsPerCategory();
+        updateSetCategory();
     }
 
 }

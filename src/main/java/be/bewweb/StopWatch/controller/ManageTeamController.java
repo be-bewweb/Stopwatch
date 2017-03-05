@@ -87,8 +87,8 @@ public class ManageTeamController extends BaseController {
 
     private TeamRepository teamRepository;
 
-    DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
-    DateTimeFormatter formatterWithMillis = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss.SSS");
+    private DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
+    private DateTimeFormatter formatterWithMillis = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss.SSS");
 
 
     @Override
@@ -106,53 +106,45 @@ public class ManageTeamController extends BaseController {
             currentTeam = new Team();
         }
 
-        btnSaveAndNew.setOnAction(event -> onClickBtnSaveAndNew(event));
-        btnSaveAndClose.setOnAction(event -> onClickBtnSaveAndClose(event));
-        btnClose.setOnAction(event -> onClickBtnClose(event));
-        txtDossard.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-
-                } else {
-                    onFocusLostTxtDossard();
-                }
+        btnSaveAndNew.setOnAction(this::onClickBtnSaveAndNew);
+        btnSaveAndClose.setOnAction(this::onClickBtnSaveAndClose);
+        btnClose.setOnAction(this::onClickBtnClose);
+        txtDossard.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                onFocusLostTxtDossard();
             }
         });
 
-        cbCourse.setOnHidden(new EventHandler<Event>() {
-            @Override
-            public void handle(Event event) {
-                Course course = cbCourse.getSelectionModel().getSelectedItem();
-                if (currentTeam.getCourse() != null && !Objects.equals(currentTeam.getCourse().getId(), course.getId()) && course.isStarted()) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Course déjà commencé !");
-                    alert.setContentText("Vous avez choisi un parcours qui a déjà commencé ! Voulez-vous aussi changer l'heure de départ de cette équipe ? ");
-                    ButtonType ok = new ButtonType("Oui", ButtonBar.ButtonData.OK_DONE);
-                    ButtonType no = new ButtonType("Garder l'heure de départ actuelle", ButtonBar.ButtonData.NO);
+        cbCourse.setOnHidden(event -> {
+            Course course = cbCourse.getSelectionModel().getSelectedItem();
+            if (currentTeam.getCourse() != null && !Objects.equals(currentTeam.getCourse().getId(), course.getId()) && course.isStarted()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Course déjà commencé !");
+                alert.setContentText("Vous avez choisi un parcours qui a déjà commencé ! Voulez-vous aussi changer l'heure de départ de cette équipe ? ");
+                ButtonType ok = new ButtonType("Oui", ButtonBar.ButtonData.OK_DONE);
+                ButtonType no = new ButtonType("Garder l'heure de départ actuelle", ButtonBar.ButtonData.NO);
 
-                    alert.getButtonTypes().setAll(ok, no);
-                    Optional<ButtonType> result = alert.showAndWait();
+                alert.getButtonTypes().setAll(ok, no);
+                Optional<ButtonType> result = alert.showAndWait();
 
 
-                    if (result.get() == ok) {
-                        txtStartTime.setText(course.getStartTime().toString(formatter));
-                    }
+                if (result.get() == ok) {
+                    txtStartTime.setText(course.getStartTime().toString(formatter));
+                }
 
-                } else if (currentTeam.getCourse() == null && course.isStarted()) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Course déjà commencé !");
-                    alert.setContentText("Vous avez choisi un parcours qui a déjà commencé ! Voulez-vous utiliser l'heure de départ de la course pour cette équipe ? ");
-                    ButtonType ok = new ButtonType("Oui", ButtonBar.ButtonData.OK_DONE);
-                    ButtonType no = new ButtonType("Non", ButtonBar.ButtonData.NO);
+            } else if (currentTeam.getCourse() == null && course.isStarted()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Course déjà commencé !");
+                alert.setContentText("Vous avez choisi un parcours qui a déjà commencé ! Voulez-vous utiliser l'heure de départ de la course pour cette équipe ? ");
+                ButtonType ok = new ButtonType("Oui", ButtonBar.ButtonData.OK_DONE);
+                ButtonType no = new ButtonType("Non", ButtonBar.ButtonData.NO);
 
-                    alert.getButtonTypes().setAll(ok, no);
-                    Optional<ButtonType> result = alert.showAndWait();
+                alert.getButtonTypes().setAll(ok, no);
+                Optional<ButtonType> result = alert.showAndWait();
 
 
-                    if (result.get() == ok) {
-                        txtStartTime.setText(course.getStartTime().toString(formatter));
-                    }
+                if (result.get() == ok) {
+                    txtStartTime.setText(course.getStartTime().toString(formatter));
                 }
             }
         });
@@ -190,14 +182,7 @@ public class ManageTeamController extends BaseController {
 
     private void initTableViewEndTimes() {
         tbEndTimes.setEditable(true);
-        Callback<TableColumn, TableCell> cellFactory =
-                new Callback<TableColumn, TableCell>() {
-
-                    @Override
-                    public TableCell call(TableColumn p) {
-                        return new EditingCellEndTime();
-                    }
-                };
+        Callback<TableColumn, TableCell> cellFactory = p -> new EditingCellEndTime();
 
         TableColumn endTimeCol = new TableColumn("Heure d'arrivée");
         endTimeCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures, ObservableValue>() {
@@ -266,7 +251,7 @@ public class ManageTeamController extends BaseController {
         }
     }
 
-    public void onClickBtnClose(Event event) {
+    private void onClickBtnClose(Event event) {
         getStage().close();
     }
 
@@ -393,7 +378,7 @@ public class ManageTeamController extends BaseController {
         tbEndTimes.refresh();
     }
 
-    public void onClickBtnSaveAndNew(Event event) {
+    private void onClickBtnSaveAndNew(Event event) {
         if (saveTeam()) {
             Stage stage = new Stage();
             stage.setUserData(race);
@@ -402,13 +387,13 @@ public class ManageTeamController extends BaseController {
         }
     }
 
-    public void onClickBtnSaveAndClose(Event event) {
+    private void onClickBtnSaveAndClose(Event event) {
         if (saveTeam()) {
             onClickBtnClose(event);
         }
     }
 
-    public void onFocusLostTxtDossard() {
+    private void onFocusLostTxtDossard() {
         try {
             int bib = Integer.parseInt(txtDossard.getText());
             Team teamFound = findOneByRaceAndBib(race, bib);
@@ -443,7 +428,6 @@ public class ManageTeamController extends BaseController {
         }
         return null;
     }
-
 
     class EditingCellEndTime extends TableCell<XYChart.Data, String> {
 

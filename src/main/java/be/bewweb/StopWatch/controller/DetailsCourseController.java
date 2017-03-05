@@ -42,7 +42,7 @@ public class DetailsCourseController {
 
     private Repository<Course> courseRepository;
 
-    public DetailsCourseController(Course course) {
+    DetailsCourseController(Course course) {
         this.course = course;
     }
 
@@ -50,7 +50,7 @@ public class DetailsCourseController {
     public void initialize() {
         courseRepository = new Repository<>(Course.class);
 
-        btnStartCourse.setOnAction(event -> onClickBtnStartCourse(event));
+        btnStartCourse.setOnAction(this::onClickBtnStartCourse);
 
         if (course.isStarted()) {
             disableTxtTime();
@@ -63,7 +63,7 @@ public class DetailsCourseController {
         return this.course;
     }
 
-    public void refreshCourse(Course course) {
+    void refreshCourse(Course course) {
         this.course = course;
         refreshNumberTeam();
         setLabelValue();

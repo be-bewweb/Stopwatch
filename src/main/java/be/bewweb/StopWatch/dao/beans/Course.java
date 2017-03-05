@@ -41,28 +41,6 @@ public class Course implements Serializable {
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime startTime;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Course course = (Course) o;
-
-        return id != null ? id.equals(course.id) : course.id == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (km != +0.0f ? Float.floatToIntBits(km) : 0);
-        result = 31 * result + (teams != null ? teams.hashCode() : 0);
-        result = 31 * result + (numberOfTurns != null ? numberOfTurns.hashCode() : 0);
-        result = 31 * result + (started ? 1 : 0);
-        result = 31 * result + (race != null ? race.hashCode() : 0);
-        result = 31 * result + (category != null ? category.hashCode() : 0);
-        return result;
-    }
 
     @Column(name = "started")
     private boolean started;
@@ -72,7 +50,7 @@ public class Course implements Serializable {
     @JoinColumn(name = "id_race")
     private Race race;
 
-    @OneToOne(mappedBy = "course")
+    @OneToOne(mappedBy = "course", cascade = CascadeType.ALL)
     private Category category;
 
 
@@ -136,6 +114,7 @@ public class Course implements Serializable {
     public Category getCategory() {
         if (category == null) {
             this.category = new Category();
+            this.category.setCourse(this);
         }
         return category;
     }
@@ -148,6 +127,28 @@ public class Course implements Serializable {
         return race;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Course course = (Course) o;
+
+        return id != null ? id.equals(course.id) : course.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (km != +0.0f ? Float.floatToIntBits(km) : 0);
+        result = 31 * result + (teams != null ? teams.hashCode() : 0);
+        result = 31 * result + (numberOfTurns != null ? numberOfTurns.hashCode() : 0);
+        result = 31 * result + (started ? 1 : 0);
+        result = 31 * result + (race != null ? race.hashCode() : 0);
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        return result;
+    }
     public void setRace(Race race) {
         this.race = race;
     }

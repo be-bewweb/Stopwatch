@@ -2,7 +2,6 @@ package be.bewweb.StopWatch.controller;
 
 import be.bewweb.StopWatch.dao.beans.Course;
 import be.bewweb.StopWatch.dao.beans.Race;
-import be.bewweb.StopWatch.dao.beans.Runner;
 import be.bewweb.StopWatch.dao.beans.Team;
 import be.bewweb.StopWatch.dao.persistence.HibernateUtil;
 import be.bewweb.StopWatch.dao.persistence.Repository.Repository;
@@ -26,7 +25,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.joda.time.DateTime;
 
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -71,8 +69,8 @@ public class EncodeController extends BaseController {
 
 
         btnArrived.setOnAction(event -> onClickBtnArrived(event));
-        txtDossard.setOnKeyPressed(event -> onKeyPressedTxtDossard(event));
-        txtDossard.setOnAction(event -> onActionTxtDossard(event));
+        txtDossard.setOnKeyPressed(event -> onKeyPressedTxtBib(event));
+        txtDossard.setOnAction(event -> onActionTxtBib(event));
         btnArrived.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 onClickBtnArrived(event);
@@ -126,7 +124,6 @@ public class EncodeController extends BaseController {
 
     }
 
-
     private void refreshRace() {
         try {
             race = raceRepository.find(race.getId());
@@ -149,7 +146,6 @@ public class EncodeController extends BaseController {
 
         }
     }
-
 
     private void initTableView() {
         tbListTeamLogData = FXCollections.observableArrayList();
@@ -213,7 +209,7 @@ public class EncodeController extends BaseController {
                     setStyle("-fx-background-color: #bdc3c7;");
                 } else if (item.getSpeed() > 19f) {
                     setStyle("-fx-background-color: #e74c3c;");
-                }else if (item.getSpeed() > 18f) {
+                } else if (item.getSpeed() > 18f) {
                     setStyle("-fx-background-color: #e67e22;");
                 } else if (item.getSpeed() > 17f) {
                     setStyle("-fx-background-color: #f39c12;");
@@ -292,7 +288,7 @@ public class EncodeController extends BaseController {
 
     }
 
-    private void UIDossard(String message, String color) {
+    private void UIBib(String message, String color) {
         lblInfo.setText(message);
         txtDossard.setText("");
         txtDossard.setStyle("-fx-background-color: " + color);
@@ -304,7 +300,7 @@ public class EncodeController extends BaseController {
         refreshRace();
 
         if (txtDossard.getText().equals("")) {
-            UIDossard("Numéro de dossard nécessaire", "red");
+            UIBib("Numéro de dossard nécessaire", "red");
             return;
         }
 
@@ -337,15 +333,15 @@ public class EncodeController extends BaseController {
                 courseFound = race.getCourses().get(0);
                 courseFound.getTeams().add(teamFound);
                 teamFound.setCourse(courseFound);
-                UIDossard("Dossard introuvable", "green");
+                UIBib("Dossard introuvable", "green");
             } else {
                 if (teamFound.getEndTime().size() > 0 && teamFound.getEndTime().get(teamFound.getEndTime().size() - 1).getMillis() + SECONDS_BETWEEN_TWO_SCAN * 1000 > dateTime.getMillis()) {
-                    UIDossard("Ce dossard a déjà été encodé !", "red");
+                    UIBib("Ce dossard a déjà été encodé !", "red");
                     return;
                 } else if (teamFound.getEndTime().size() >= courseFound.getNumberOfTurns()) {
-                    UIDossard("Attention, course déjà terminé !", "orange");
+                    UIBib("Attention, course déjà terminé !", "orange");
                 } else {
-                    UIDossard("OK", "green");
+                    UIBib("OK", "green");
                 }
             }
 
@@ -355,16 +351,16 @@ public class EncodeController extends BaseController {
             teamRepository.merge(teamFound);
 
         } catch (Exception e) {
-            UIDossard("Une erreur est survenue !", "red");
+            UIBib("Une erreur est survenue !", "red");
             e.printStackTrace();
         }
     }
 
-    private void onKeyPressedTxtDossard(Event event) {
+    private void onKeyPressedTxtBib(Event event) {
         txtDossard.getStyleClass().removeAll();
     }
 
-    private void onActionTxtDossard(Event event) {
+    private void onActionTxtBib(Event event) {
         onClickBtnArrived(event);
     }
 
@@ -379,7 +375,6 @@ public class EncodeController extends BaseController {
             //Not item selected
         }
     }
-
 
     public class TeamLog {
         private Team team;
@@ -419,7 +414,6 @@ public class EncodeController extends BaseController {
         public String getCourse() {
             return team.getCourse().toString();
         }
-
 
         public int getTurn() {
             return turn;
